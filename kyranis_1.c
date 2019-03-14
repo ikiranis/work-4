@@ -24,6 +24,7 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX]);
 /* ΕΔΩ ΒΑΛΤΕ ΔΗΛΩΣΕΙΣ ΒΟΗΘΗΤΙΚΩΝ ΣΥΝΑΡΤΗΣΕΩΝ (AN ΚΡΙΝΕΤΕ ΑΠΑΡΑΙΤΗΤΟ) */
 
 /* Κύριο πρόγραμμα υπολογισμού μετάδοσης θερμοκρασίας */
+int something(){}
 
 int main()
 {
