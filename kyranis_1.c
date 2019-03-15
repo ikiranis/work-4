@@ -21,6 +21,7 @@ void InitializeTable(float T[DIMY][DIMX]);
 void PrintTable(float T[DIMY][DIMX]);
 float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX]);
 float CalculateCorner(float side1, float side2);
+float fabs(float number);
 
 /* ΕΔΩ ΒΑΛΤΕ ΔΗΛΩΣΕΙΣ ΒΟΗΘΗΤΙΚΩΝ ΣΥΝΑΡΤΗΣΕΩΝ (AN ΚΡΙΝΕΤΕ ΑΠΑΡΑΙΤΗΤΟ) */
 
@@ -123,15 +124,34 @@ void PrintTable(float T[DIMY][DIMX])
 
 }
 
+// Επιστρέφει την απόλυτη τιμή ενός float αριθμού
+float fabs(float number)
+{
+    return (number >= 0) ? number : -number;
+}
 
+/* Υπολογισμός θερμοκρασίας τη χρονική στιγμή t με βάση τη χρονική στιγμή t-1 */
 float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
 {
-    /* Υπολογισμός θερμοκρασίας τη χρονική στιγμή t με βάση τη χρονική στιγμή t-1 */
 
-    /* ΒΑΛΤΕ ΕΔΩ ΤΟΝ ΚΩΔΙΚΑ ΣΑΣ */
+    int i, j; // Μετρητές
 
-//    T[i][j] = (float)0.1
-//              * (T[i-1][j-1] + T[i-1][j] + T[i-1][j+1]
-//                 + T[i][j-1] + 2*T[i][j] + T[i][j+1]
-//                 + T[i+1][j-1] + T[i+1][j] + T[i+1][j+1]);
+    float SumVariation = 0; // Η αθροιστική μεταβολή όλων των στοιχείων του πίνακα
+
+    // Διαπέραση του πίνακα C (t-1) και υπολογισμός των νέων στοιχείων του T (t)
+    for(i=0; i<DIMY; i++) {
+        for (j = 0; j < DIMX; j++) {
+            T[i][j] = (float) 0.1
+                        * (C[i - 1][j - 1] + C[i - 1][j] + C[i - 1][j + 1]
+                        + C[i][j - 1] + 2 * C[i][j] + C[i][j + 1]
+                        + C[i + 1][j - 1] + C[i + 1][j] + C[i + 1][j + 1]);
+
+            // Υπολογισμός της αθροιστικής μεταβολής. Η απόλυτη τιμή της διαφοράς των 2 στοιχείων
+            SumVariation += fabs(T[i][j] - C[i][j]);
+        }
+    }
+
+    // Επιστροφή της αθροιστικής μεταβολής
+    return SumVariation;
+
 }
