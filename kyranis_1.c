@@ -30,9 +30,11 @@ int main()
     /* Δημιούργησε ένα πίνακα Plate στον οποίο αποθηκεύεται η θερμοκρασία
     σε διαδοχικές στιγμές */
 
-    float Plate[DIMY][DIMX];
+    float Plate[DIMY][DIMX], newPlate[DIMY][DIMX];
     int time;   /* Μεταβλητή για υπολογισμό χρόνου μετάβασης */
     float SumVariation; // Η αθροιστική μεταβολή των στοιχείων της πλάκας
+
+    int i,j;
 
     /* Εισαγωγή Ελληνικών χαρακτήρων */
 //    system("chcp 1253>nul");
@@ -42,12 +44,18 @@ int main()
     InitializeTable(Plate); /* Aρχικοποίηση πίνακα Plate */
 
     do {
-        SumVariation = CalculateNextTemperature(Plate, Plate);
+        SumVariation = CalculateNextTemperature(newPlate, Plate);
 
         printf("\n\nT%d\n", time);
         PrintTable(Plate);
 
         printf("\n%f\n", SumVariation);
+
+        for(i=1; i<DIMY-1; i++) {
+            for(j=1; j<DIMX-1; j++) {
+                Plate[i][j] = newPlate[i][j];
+            }
+        }
 
         time++;
 
@@ -58,6 +66,7 @@ int main()
     return 0;
 
 }
+
 
 /* Εισαγωγή θερμοκρασίας από τον χρήστη με μήνυμα εκτύπωσης προς χρήστη το prompt */
 float EnterTemperature(const char prompt[51])
