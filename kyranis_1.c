@@ -20,10 +20,9 @@ float EnterTemperature(const char prompt[51]);
 void InitializeTable(float T[DIMY][DIMX]);
 void PrintTable(float T[DIMY][DIMX]);
 float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX]);
+
 float CalculateCorner(float side1, float side2);
 float floatAbs(float number);
-
-/* ΕΔΩ ΒΑΛΤΕ ΔΗΛΩΣΕΙΣ ΒΟΗΘΗΤΙΚΩΝ ΣΥΝΑΡΤΗΣΕΩΝ (AN ΚΡΙΝΕΤΕ ΑΠΑΡΑΙΤΗΤΟ) */
 
 /* Κύριο πρόγραμμα υπολογισμού μετάδοσης θερμοκρασίας */
 int main()
@@ -33,18 +32,27 @@ int main()
 
     float Plate[DIMY][DIMX];
     int time;   /* Μεταβλητή για υπολογισμό χρόνου μετάβασης */
-
-    /* BAΛΤΕ ΕΔΩ ΤΟΝ ΚΩΔΙΚΑ ΣΑΣ ΓΙΑ ΔΗΛΩΣΗ ΒΟΗΘΗΤΙΚΩΝ ΜΕΤΑΒΛΗΤΩΝ */
+    float SumVariation; // Η αθροιστική μεταβολή των στοιχείων της πλάκας
 
     /* Εισαγωγή Ελληνικών χαρακτήρων */
 //    system("chcp 1253>nul");
+
+
     time = 0;
     InitializeTable(Plate); /* Aρχικοποίηση πίνακα Plate */
 
-    /* BAΛΤΕ ΕΔΩ ΤΟΝ ΚΩΔΙΚΑ ΣΑΣ ΓΙΑ ΕΠΑΝΑΛΗΠΤΙΚΟ ΧΕΙΡΙΣΜΟ ΤΟΥ ΠΙΝΑΚΑ Plate
-	ΜΕΣΩ ΚΛΗΣΕΩΝ ΤΗΣ ΣΥΝΑΡΤΗΣΗΣ CalculateNextTemperature ΚΑΙ PrintTable  */
+    do {
+        SumVariation = CalculateNextTemperature(Plate, Plate);
+
+        printf("\n\nT%d\n", time);
+        PrintTable(Plate);
+
+        time++;
+
+    } while(SumVariation>0.01);
 
     printf("O χρόνος για να φθάσει η πλάκα σε μόνιμη κατάσταση είναι: %d δευτερόλεπτα\n",time);
+
     return 0;
 
 }
@@ -146,9 +154,12 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
                         + C[i][j - 1] + 2 * C[i][j] + C[i][j + 1]
                         + C[i + 1][j - 1] + C[i + 1][j] + C[i + 1][j + 1]);
 
+            printf("%.2f ", T[i][j]);
+
             // Υπολογισμός της αθροιστικής μεταβολής. Η απόλυτη τιμή της διαφοράς των 2 στοιχείων
             SumVariation += floatAbs(T[i][j] - C[i][j]);
         }
+        printf("\n");
     }
 
     // Επιστροφή της αθροιστικής μεταβολής
