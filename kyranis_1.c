@@ -21,7 +21,7 @@ void InitializeTable(float T[DIMY][DIMX]);
 void PrintTable(float T[DIMY][DIMX]);
 float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX]);
 float CalculateCorner(float side1, float side2);
-float fabs(float number);
+float floatAbs(float number);
 
 /* ΕΔΩ ΒΑΛΤΕ ΔΗΛΩΣΕΙΣ ΒΟΗΘΗΤΙΚΩΝ ΣΥΝΑΡΤΗΣΕΩΝ (AN ΚΡΙΝΕΤΕ ΑΠΑΡΑΙΤΗΤΟ) */
 
@@ -125,7 +125,7 @@ void PrintTable(float T[DIMY][DIMX])
 }
 
 // Επιστρέφει την απόλυτη τιμή ενός float αριθμού
-float fabs(float number)
+float floatAbs(float number)
 {
     return (number >= 0) ? number : -number;
 }
@@ -147,7 +147,7 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
                         + C[i + 1][j - 1] + C[i + 1][j] + C[i + 1][j + 1]);
 
             // Υπολογισμός της αθροιστικής μεταβολής. Η απόλυτη τιμή της διαφοράς των 2 στοιχείων
-            SumVariation += fabs(T[i][j] - C[i][j]);
+            SumVariation += floatAbs(T[i][j] - C[i][j]);
         }
     }
 
