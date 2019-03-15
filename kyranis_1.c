@@ -108,11 +108,19 @@ void InitializeTable(float T[DIMY][DIMX])
 
 }
 
+/* Εκτύπωση πίνακα */
 void PrintTable(float T[DIMY][DIMX])
 {
-    /* Εκτύπωση πίνακα */
+    int i, j; // Μετρητές
 
-    /* ΒΑΛΤΕ ΕΔΩ ΤΟΝ ΚΩΔΙΚΑ ΣΑΣ*/
+    // Διαπέραση όλων των στοιχείων του πίνακα Τ και εκτύπωση τους
+    for(i=0; i<DIMY; i++) {
+        for(j=0; j<DIMX; j++) {
+            printf("%.2f ", T[i][j]);
+        }
+        printf("\n");
+    }
+
 }
 
 
