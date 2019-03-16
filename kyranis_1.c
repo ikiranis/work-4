@@ -30,11 +30,12 @@ int main()
     /* Δημιούργησε ένα πίνακα Plate στον οποίο αποθηκεύεται η θερμοκρασία
     σε διαδοχικές στιγμές */
 
-    float Plate[DIMY][DIMX], newPlate[DIMY][DIMX];
+    float Plate[DIMY][DIMX];
+    float newPlate[DIMY][DIMX]; // Νέος πίνακας
     int time;   /* Μεταβλητή για υπολογισμό χρόνου μετάβασης */
     float SumVariation; // Η αθροιστική μεταβολή των στοιχείων της πλάκας
 
-    int i,j;
+    int i,j; // Μετρητές
 
     /* Εισαγωγή Ελληνικών χαρακτήρων */
 //    system("chcp 1253>nul");
@@ -43,23 +44,32 @@ int main()
     time = 0;
     InitializeTable(Plate); /* Aρχικοποίηση πίνακα Plate */
 
+    // Επανάληψη όσο το SumVariation είναι πάνω από 0.01
     do {
+        // Υπολογισμός των στοιχείων για την νέα χρονική στιγμή και απόδοση της νέας αθροιστικής μεταβολής
+        // Plate ο πίνακας στην t-1 χρονική στιγμή, newPlate ο πίνακας στην χρονική στιγμή t
         SumVariation = CalculateNextTemperature(newPlate, Plate);
 
+        // Εκτύπωση του πίνακα
         printf("\n\nT%d\n", time);
         PrintTable(Plate);
 
-        printf("\n%f\n", SumVariation);
-
+        // Αντιγραφή των τιμών του newPlate στον Plate, ώστε στην επόμενη στιγμή ο Plate να είναι η t-1 στιγμή
         for(i=1; i<DIMY-1; i++) {
             for(j=1; j<DIMX-1; j++) {
                 Plate[i][j] = newPlate[i][j];
             }
         }
 
+        // Αύξηση του μετρητή χρόνου
         time++;
 
     } while(SumVariation>0.01);
+
+    // Μείωση του μετρητή για μην υπολογίζει και την στιγμή t(0)
+    if(time>0) {
+        time--;
+    }
 
     printf("O χρόνος για να φθάσει η πλάκα σε μόνιμη κατάσταση είναι: %d δευτερόλεπτα\n",time);
 
@@ -120,14 +130,14 @@ void InitializeTable(float T[DIMY][DIMX])
 
     // Αρχικοποίηση κάθετων πλευρικών στοιχείων
     for(i=1; i<DIMY-1; i++) {
-        T[i][0] = Tw;
-        T[i][DIMX-1] = Te;
+        T[i][0] = Tw; // Δυτική πλευρά
+        T[i][DIMX-1] = Te; // Ανατολική πλευρά
     }
 
     // Αρχικοποίηση οριζόντιων πλευρικών στοιχείων
     for(j=1; j<DIMX-1; j++) {
-        T[0][j] = Tn;
-        T[DIMY-1][j] = Ts;
+        T[0][j] = Tn; // Βόρεια πλευρά
+        T[DIMY-1][j] = Ts; // Νότια πλευρά
     }
 
 }
@@ -159,20 +169,18 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
 
     int i, j; // Μετρητές
     float SumVariation = 0; // Η αθροιστική μεταβολή όλων των στοιχείων του πίνακα
-    float newValue;
 
     // Διαπέραση του πίνακα C (t-1) και υπολογισμός των νέων στοιχείων του T (t)
     for(i=1; i<DIMY-1; i++) {
         for (j = 1; j < DIMX-1; j++) {
-            newValue = (float) 0.1
+            // Ο τύπος που υπολογίζει την θερμοκρασία κάθε στοιχείου από τα γειτονικά του
+            T[i][j] = (float) 0.1
                         * (C[i - 1][j - 1] + C[i - 1][j] + C[i - 1][j + 1]
                         + C[i][j - 1] + 2 * C[i][j] + C[i][j + 1]
                         + C[i + 1][j - 1] + C[i + 1][j] + C[i + 1][j + 1]);
 
             // Υπολογισμός της αθροιστικής μεταβολής. Η απόλυτη τιμή της διαφοράς των 2 στοιχείων
-            SumVariation += floatAbs(newValue - C[i][j]);
-
-            T[i][j] = newValue;
+            SumVariation += floatAbs(T[i][j] - C[i][j]);
         }
     }
 
