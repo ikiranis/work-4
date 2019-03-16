@@ -23,6 +23,7 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX]);
 
 float CalculateCorner(float side1, float side2);
 float floatAbs(float number);
+void copyArrays(float source[DIMY][DIMX], float target[DIMY][DIMX]);
 
 /* Κύριο πρόγραμμα υπολογισμού μετάδοσης θερμοκρασίας */
 int main()
@@ -55,11 +56,7 @@ int main()
         PrintTable(Plate);
 
         // Αντιγραφή των τιμών του newPlate στον Plate, ώστε στην επόμενη στιγμή ο Plate να είναι η t-1 στιγμή
-        for(i=1; i<DIMY-1; i++) {
-            for(j=1; j<DIMX-1; j++) {
-                Plate[i][j] = newPlate[i][j];
-            }
-        }
+        copyArrays(newPlate, Plate);
 
         // Αύξηση του μετρητή χρόνου
         time++;
@@ -71,7 +68,7 @@ int main()
         time--;
     }
 
-    printf("O χρόνος για να φθάσει η πλάκα σε μόνιμη κατάσταση είναι: %d δευτερόλεπτα\n",time);
+    printf("\nO χρόνος για να φθάσει η πλάκα σε μόνιμη κατάσταση είναι: %d δευτερόλεπτα\n",time);
 
     return 0;
 
@@ -103,17 +100,17 @@ void InitializeTable(float T[DIMY][DIMX])
     int i, j; // Μετρητές
 
     // Εισαγωγή θερμοκρασιών από τον χρήστη, καλώντας την EnterTemperature
-//    Tw = EnterTemperature("Δώσε την πλευρική θερμοκρασία T west: ");
-//    Te = EnterTemperature("Δώσε την πλευρική θερμοκρασία T east: ");
-//    Tn = EnterTemperature("Δώσε την πλευρική θερμοκρασία T north: ");
-//    Ts = EnterTemperature("Δώσε την πλευρική θερμοκρασία T south: ");
-//    T0 = EnterTemperature("Δώσε την θερμοκρασία της πλάκας T(0): ");
+    Tw = EnterTemperature("Δώσε την πλευρική θερμοκρασία T west: ");
+    Te = EnterTemperature("Δώσε την πλευρική θερμοκρασία T east: ");
+    Tn = EnterTemperature("Δώσε την πλευρική θερμοκρασία T north: ");
+    Ts = EnterTemperature("Δώσε την πλευρική θερμοκρασία T south: ");
+    T0 = EnterTemperature("Δώσε την θερμοκρασία της πλάκας T(0): ");
 
-    Tw = 4;
-    Te = -5;
-    Tn = 2;
-    Ts = 3;
-    T0 = 1;
+//    Tw = 4;
+//    Te = -5;
+//    Tn = 2;
+//    Ts = 3;
+//    T0 = 1;
 
     // Διαπέραση όλων των στοιχείων του πίνακα Τ (εκτός των πλευρικών) και αρχικοποίηση με την τιμή T0
     for(i=1; i<DIMY-1; i++) {
@@ -150,7 +147,7 @@ void PrintTable(float T[DIMY][DIMX])
     // Διαπέραση όλων των στοιχείων του πίνακα Τ και εκτύπωση τους
     for(i=0; i<DIMY; i++) {
         for(j=0; j<DIMX; j++) {
-            printf("%.2f ", T[i][j]);
+            printf("%6.2f", T[i][j]);
         }
         printf("\n");
     }
@@ -189,4 +186,17 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
     // Επιστροφή της αθροιστικής μεταβολής
     return SumVariation;
 
+}
+
+
+// Αντιγραφή του source στον target πίνακα
+void copyArrays(float source[DIMY][DIMX], float target[DIMY][DIMX])
+{
+    int i, j;
+
+    for(i=1; i<DIMY-1; i++) {
+        for(j=1; j<DIMX-1; j++) {
+            target[i][j] = source[i][j];
+        }
+    }
 }
