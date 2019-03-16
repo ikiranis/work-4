@@ -13,6 +13,7 @@
  */
 
 #include <stdio.h>
+#include <math.h>
 
 const int DIMX = 20;
 const int DIMY = 10;
@@ -22,7 +23,6 @@ void PrintTable(float T[DIMY][DIMX]);
 float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX]);
 
 float CalculateCorner(float side1, float side2);
-float floatAbs(float number);
 void copyArrays(float source[DIMY][DIMX], float target[DIMY][DIMX]);
 
 /* Κύριο πρόγραμμα υπολογισμού μετάδοσης θερμοκρασίας */
@@ -152,12 +152,6 @@ void PrintTable(float T[DIMY][DIMX])
 
 }
 
-// Επιστρέφει την απόλυτη τιμή ενός float αριθμού
-float floatAbs(float number)
-{
-    return (number >= 0) ? number : -number;
-}
-
 /* Υπολογισμός θερμοκρασίας τη χρονική στιγμή t με βάση τη χρονική στιγμή t-1 */
 float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
 {
@@ -175,7 +169,7 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
                         + C[i + 1][j - 1] + C[i + 1][j] + C[i + 1][j + 1]);
 
             // Υπολογισμός της αθροιστικής μεταβολής. Η απόλυτη τιμή της διαφοράς των 2 στοιχείων
-            SumVariation += floatAbs(T[i][j] - C[i][j]);
+            SumVariation += fabsf(T[i][j] - C[i][j]);
         }
     }
 
