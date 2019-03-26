@@ -131,7 +131,7 @@ void show(struct stack *head)
     if (isEmpty(head)) {
         printf("\n");
     } else {
-        printf("%d ", top(head));
+        printf("\nΟ βαθμός του φοιτητή είναι: %d", pop(&head));
         show(head);
     }
 
@@ -206,6 +206,10 @@ int main()
         } while (answer<0 || answer>1);
 
     } while (answer==1);
+
+    printf("\n");
+    printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
+    show(top);
 
     show(top);
 
