@@ -109,20 +109,23 @@ void Insert_Sort(struct stack **head, int vath)
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
     if (isEmpty(*head)) {
-        grade = top(*head);
-
-        if ( vath > grade ) {
-            push(head, vath);
-        }
-    } else {
-
-        grade = pop(head);
-
-        Insert_Sort(head, vath);
-
-        // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
-        push(head, grade);
+        push(head, vath);
+        return;
     }
+
+    grade = top(*head);
+
+    if (vath > grade) {
+        push(head, vath);
+        return;
+    }
+
+    grade = pop(head);
+
+    Insert_Sort(head, vath);
+
+    // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
+    push(head, grade);
 
 }
 
@@ -173,6 +176,20 @@ void st_delete(struct stack **head)
     }
 }
 
+// DEBUG *************
+void display(struct stack **head)
+{
+    struct stack *current = *head;
+
+    // Scan all the list nodes until the end (NULL)
+    while(current!=NULL) {
+        printf("%d ", current->grade); // Print data of current node
+        current = current->next; // Go to the next node
+    }
+
+    printf("\n");
+}
+
 
 /* Κυρίως Πρόγραμμα */
 int main()
@@ -209,6 +226,8 @@ int main()
         // Εισαγωγή του βαθμού στην στοίβα
         Insert_Sort(&top, vathmologia);
 
+//        push(&top, vathmologia);
+
         printf("\n");
         printf("Ο Βαθμός που δώσατε έχει καταχωρηθεί. \n ");
         printf("\n");
@@ -231,8 +250,8 @@ int main()
 
     printf("\n");
     printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
-    show(top);
 
+//    display(&top);
     show(top);
 
 
