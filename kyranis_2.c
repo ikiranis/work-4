@@ -106,6 +106,24 @@ void Insert_Sort(struct stack **head, int vath)
 /* αφού αφαιρεθεί πρώτα το στοιχείο της κορυφής */
 /* Βάλε και πάλι στη στοίβα το στοιχείο της κορυφής που είχες αφαιρέσει πριν */
 
+    int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
+
+    if (isEmpty(*head)) {
+        grade = top(*head);
+
+        if ( vath > grade ) {
+            push(head, vath);
+        }
+    } else {
+
+        grade = pop(head);
+
+        Insert_Sort(head, vath);
+
+        // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
+        push(head, grade);
+    }
+
 }
 
 /* ΑΝΑΔΡΟΜΙΚΗ συνάρτηση που υλοποιεί την ταξινόμηση στοίβας και καλεί την ΑΝΑΔΡΟΜΙΚΗ Insert_Sort */
@@ -119,6 +137,8 @@ void sort_Stack(struct stack **head)
 /* Ταξινόμησε την υπόλοιπη στοίβα καλώντας αναδρομικά τον εαυτό της */
 /* Τοποθέτησε ξανά το στοιχείο της Κορυφής στην ταξινομημένη στοίβα */
 /* Κλήση της Insert_Sort */
+
+
 
 }
 
@@ -187,7 +207,7 @@ int main()
         } while (vathmologia < 1 || vathmologia > 10);
 
         // Εισαγωγή του βαθμού στην στοίβα
-        push(&top, vathmologia);
+        Insert_Sort(&top, vathmologia);
 
         printf("\n");
         printf("Ο Βαθμός που δώσατε έχει καταχωρηθεί. \n ");
