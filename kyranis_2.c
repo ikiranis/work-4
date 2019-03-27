@@ -183,7 +183,7 @@ void display(struct stack **head)
 
     // Scan all the list nodes until the end (NULL)
     while(current!=NULL) {
-        printf("%d ", current->grade); // Print data of current node
+        printf("%d %d\n", current->grade, (int)current->next); // Print data of current node
         current = current->next; // Go to the next node
     }
 
