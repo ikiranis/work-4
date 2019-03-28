@@ -96,16 +96,6 @@ int top(struct stack *head)
 /* ΑΝΑΔΡΟΜΙΚΗ Συνάρτηση Ταξινόμησης Στοίβας Insert_Sort */
 void Insert_Sort(struct stack **head, int vath)
 {
-/* Μέσα σε αυτήν τη συνάρτηση γράψτε κώδικα C που θα υλοποιεί την ΑΝΑΔΡΟΜΙΚΗ Insert_Sort */
-/* Διαβάστε τα πιο κάτω σχόλια */
-
-/* Εάν η στοίβα είναι άδεια ή εάν ο νέος προς εισαγωγή βαθμός είναι μεγαλύτερος */
-/* από αυτόν του κόμβου της κορυφής, συνεπώς μεγαλύτερος από όλους κάνε εισαγωγή στη στοίβα */
-
-/* Αλλιώς η συνάρτηση να κaλεί ΑΝΑΔΡΟΜΙΚΑ τoν εαυτό της (συνάρτηση Insert_Sort) */
-/* αφού αφαιρεθεί πρώτα το στοιχείο της κορυφής */
-/* Βάλε και πάλι στη στοίβα το στοιχείο της κορυφής που είχες αφαιρέσει πριν */
-
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
     if (isEmpty(*head)) {
@@ -141,7 +131,23 @@ void sort_Stack(struct stack **head)
 /* Τοποθέτησε ξανά το στοιχείο της Κορυφής στην ταξινομημένη στοίβα */
 /* Κλήση της Insert_Sort */
 
+    int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
+//    printf("\n%d empty\n", isEmpty(*head));
+
+    if (!isEmpty(*head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
+        // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
+        grade = pop(head);
+
+//        printf("\n%d ", grade);
+
+
+        sort_Stack(head);
+
+//        push(head, grade);
+
+        Insert_Sort(head, grade);
+    }
 
 }
 
@@ -183,7 +189,7 @@ void display(struct stack **head)
 
     // Scan all the list nodes until the end (NULL)
     while(current!=NULL) {
-        printf("%d %d\n", current->grade, (int)current->next); // Print data of current node
+        printf("%d", current->grade); // Print data of current node
         current = current->next; // Go to the next node
     }
 
@@ -205,54 +211,74 @@ int main()
     printf("\n");
 
     // Εισαγωγή βαθμολογιών με αμυντικό προγραμματισμό
-    do {
-
-        // Ζητάται ο βαθμός, που πρέπει να είναι στο διάστημα [1,10]
-        do {
-            printf("\n");
-            printf("Δώστε τον βαθμό: ");
-            scanf("%d", &vathmologia);
-
-            // Εμφάνιση μηνύματος λάθους βαθμολογίας
-            if(vathmologia < 1 || vathmologia > 10) {
-                printf("\n");
-                printf("Η βαθμολογία πρέπει να είναι από 1 μέχρι 10. Λάθος εισαγωγή τιμής\n");
-                printf("Η βαθμολογία που δώσατε δεν θα καταχωρηθεί");
-                printf("\n");
-            }
-
-        } while (vathmologia < 1 || vathmologia > 10);
-
-        // Εισαγωγή του βαθμού στην στοίβα
-        Insert_Sort(&top, vathmologia);
-
+//    do {
+//
+//        // Ζητάται ο βαθμός, που πρέπει να είναι στο διάστημα [1,10]
+//        do {
+//            printf("\n");
+//            printf("Δώστε τον βαθμό: ");
+//            scanf("%d", &vathmologia);
+//
+//            // Εμφάνιση μηνύματος λάθους βαθμολογίας
+//            if(vathmologia < 1 || vathmologia > 10) {
+//                printf("\n");
+//                printf("Η βαθμολογία πρέπει να είναι από 1 μέχρι 10. Λάθος εισαγωγή τιμής\n");
+//                printf("Η βαθμολογία που δώσατε δεν θα καταχωρηθεί");
+//                printf("\n");
+//            }
+//
+//        } while (vathmologia < 1 || vathmologia > 10);
+//
+//        // Εισαγωγή του βαθμού στην στοίβα
+////        Insert_Sort(&top, vathmologia);
+//
 //        push(&top, vathmologia);
+//
+//        printf("\n");
+//        printf("Ο Βαθμός που δώσατε έχει καταχωρηθεί. \n ");
+//        printf("\n");
+//
+//        // Ζητάται 0 ή 1. 1 για συνέχεια, 0 για τέλος
+//        do {
+//            printf("\n");
+//            printf("Θα δώσετε και άλλον βαθμό; (1=NAI, 0=OXI) ");
+//            scanf("%d", &answer);
+//
+//            // Εμφάνιση μηνύματος λάθους απάντησης
+//            if(answer < 0 || answer > 1) {
+//                printf("\n");
+//                printf("Μπορείτε να επιλέξετε μόνο μεταξύ 0 και 1");
+//                printf("\n");
+//            }
+//        } while (answer<0 || answer>1);
+//
+//    } while (answer==1);
 
-        printf("\n");
-        printf("Ο Βαθμός που δώσατε έχει καταχωρηθεί. \n ");
-        printf("\n");
-
-        // Ζητάται 0 ή 1. 1 για συνέχεια, 0 για τέλος
-        do {
-            printf("\n");
-            printf("Θα δώσετε και άλλον βαθμό; (1=NAI, 0=OXI) ");
-            scanf("%d", &answer);
-
-            // Εμφάνιση μηνύματος λάθους απάντησης
-            if(answer < 0 || answer > 1) {
-                printf("\n");
-                printf("Μπορείτε να επιλέξετε μόνο μεταξύ 0 και 1");
-                printf("\n");
-            }
-        } while (answer<0 || answer>1);
-
-    } while (answer==1);
+    push(&top, 4);
+    push(&top, 3);
+//    push(&top, 10);
+    push(&top, 1);
+    push(&top, 5);
+    push(&top, 2);
+    push(&top, 5);
+    push(&top, 9);
+    push(&top, 7);
 
     printf("\n");
     printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
 
 //    display(&top);
     show(top);
+
+    sort_Stack(&top);
+
+    printf("\n\n");
+    printf("Οι βαθμοί της στοίβας μετά την ταξινόμηση είναι:\n");
+
+    show(top);
+//    display(&top);
+
+
 
 
 /* Εδώ γράψτε κώδικα για την εμφάνιση των στοιχείων της στοίβας πριν την ταξινόμηση */
