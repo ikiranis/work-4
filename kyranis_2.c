@@ -46,6 +46,8 @@ void sort_Stack(struct stack **);
 void show(struct stack *);
 void st_delete(struct stack **);
 
+void display(struct stack **);
+
 /* Αρχικοποίηση μιας άδειας στοίβας */
 void construct(struct stack **head)
 {
@@ -84,7 +86,7 @@ int pop(struct stack **head)
     x = (*head)->grade;
     temp = *head;
     (*head) = (*head)->next;
-    printf("\n temp mem %d %d", (int)temp, (int)sizeof(temp));
+//    printf("\n temp mem %d %d", (int)temp, (int)sizeof(temp));
     free(temp);
 
     return x;
@@ -135,14 +137,6 @@ void Insert_Sort(struct stack **head, int vath)
 /* Εδώ θα εξοικειωθείτε με την κλήση συνάρτησης μέσα από άλλη συνάρτηση!! */
 void sort_Stack(struct stack **head)
 {
-/* Γράψτε κώδικα C που θα υλοποιεί την ταξινόμηση καλώντας για εκτέλεση τη συνάρτηση Insert_Sort.*/
-/* Μελετήστε τα πιο κάτω σχόλια*/
-/* Αν η στοίβα δεν είναι άδεια */
-/* Αφαίρεσε το στοιχείο της κορυφής */
-/* Ταξινόμησε την υπόλοιπη στοίβα καλώντας αναδρομικά τον εαυτό της */
-/* Τοποθέτησε ξανά το στοιχείο της Κορυφής στην ταξινομημένη στοίβα */
-/* Κλήση της Insert_Sort */
-
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
 //    printf("\n%d empty\n", isEmpty(*head));
@@ -171,7 +165,7 @@ void display(struct stack **head)
     printf("\nStack elements: ");
     // Scan all the list nodes until the end (NULL)
     while(current!=NULL) {
-        printf("\n%d %d %d", current->grade, (int)current, (int)sizeof(current)); // Print data of current node
+        printf("%d ", current->grade); // Print data of current node
         current = current->next; // Go to the next node
     }
 
@@ -280,17 +274,16 @@ int main()
 //    push(&top, 9);
 //    push(&top, 7);
 
-    for(i=0;i<8;i++) {
+    for(i=0;i<10;i++) {
 //        printf("Number %d\n", i+1);
-        push(&top, (int)rand()%10);
-        printf("\n");
-//        show(top);
-        printf("\n");
+        push(&top, (int)rand()%10+1);
     }
 
 
     printf("\n");
     printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
+
+
 
 //    display(&top);
     show(top);
