@@ -84,6 +84,7 @@ int pop(struct stack **head)
     x = (*head)->grade;
     temp = *head;
     (*head) = (*head)->next;
+    printf("\n temp mem %d %d", (int)temp, (int)sizeof(temp));
     free(temp);
 
     return x;
@@ -170,7 +171,7 @@ void display(struct stack **head)
     printf("\nStack elements: ");
     // Scan all the list nodes until the end (NULL)
     while(current!=NULL) {
-        printf("%d ", current->grade); // Print data of current node
+        printf("\n%d %d %d", current->grade, (int)current, (int)sizeof(current)); // Print data of current node
         current = current->next; // Go to the next node
     }
 
@@ -279,7 +280,7 @@ int main()
 //    push(&top, 9);
 //    push(&top, 7);
 
-    for(i=0;i<9;i++) {
+    for(i=0;i<8;i++) {
 //        printf("Number %d\n", i+1);
         push(&top, (int)rand()%10);
         printf("\n");
