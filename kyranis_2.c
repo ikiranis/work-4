@@ -86,7 +86,6 @@ int pop(struct stack **head)
     x = (*head)->grade;
     temp = *head;
     (*head) = (*head)->next;
-//    printf("\n temp mem %d %d", (int)temp, (int)sizeof(temp));
     free(temp);
 
     return x;
@@ -179,7 +178,7 @@ void show(struct stack *head)
 
     if (!isEmpty(head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
         // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
-        grade = pop(&head);
+        grade = pop(head);
 
         printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
 
@@ -288,6 +287,8 @@ int main()
 //    display(&top);
     show(top);
 
+    printf("\n");
+    printf("\n");
 
     display(&top);
 
