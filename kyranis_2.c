@@ -14,6 +14,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <time.h>
 /* Πρόγραμμα C που δημιουργεί μια Στοίβα (Stack) με τη χρήση Συνδεδεμένης Λίστας */
 /* και εκτελεί μια σειρά ενέργειες πάνω σε αυτήν. */
 /* Η στοίβα περιέχει τον βαθμό κάθε φοιτητή στην ΠΛΗ10 */
@@ -98,8 +100,12 @@ void Insert_Sort(struct stack **head, int vath)
 {
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
+//    printf("\n vath: %d ", vath);
+
     if (isEmpty(*head)) {
         push(head, vath);
+//        printf(" push in empty stack \n ");
+
         return;
     }
 
@@ -107,16 +113,21 @@ void Insert_Sort(struct stack **head, int vath)
 
     if (vath > grade) {
         push(head, vath);
+//        printf(" vath is greater, than %d\n Push %d \n", grade, vath);
+
         return;
     }
 
     grade = pop(head);
 
+//    printf(" pop the %d grade, run Insert_Sort, ", grade);
+
     Insert_Sort(head, vath);
+
+//    printf(" push back the grade: %d \n\n", grade);
 
     // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
     push(head, grade);
-
 }
 
 /* ΑΝΑΔΡΟΜΙΚΗ συνάρτηση που υλοποιεί την ταξινόμηση στοίβας και καλεί την ΑΝΑΔΡΟΜΙΚΗ Insert_Sort */
@@ -151,6 +162,21 @@ void sort_Stack(struct stack **head)
 
 }
 
+// DEBUG *************
+void display(struct stack **head)
+{
+    struct stack *current = *head;
+
+    printf("\nStack elements: ");
+    // Scan all the list nodes until the end (NULL)
+    while(current!=NULL) {
+        printf("%d ", current->grade); // Print data of current node
+        current = current->next; // Go to the next node
+    }
+
+    printf("\n");
+}
+
 /* ΑΝΑΔΡΟΜΙΚΗ συνάρτηση για την εμφάνιση των στοιχείων της στοίβας */
 void show(struct stack *head)
 {
@@ -159,6 +185,7 @@ void show(struct stack *head)
     if (!isEmpty(head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
         // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
         grade = pop(&head);
+
         printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
 
         // Καλούμε την show() πάλι για να εξάγουμε την επόμενη τιμή
@@ -182,21 +209,6 @@ void st_delete(struct stack **head)
     }
 }
 
-// DEBUG *************
-void display(struct stack **head)
-{
-    struct stack *current = *head;
-
-    // Scan all the list nodes until the end (NULL)
-    while(current!=NULL) {
-        printf("%d", current->grade); // Print data of current node
-        current = current->next; // Go to the next node
-    }
-
-    printf("\n");
-}
-
-
 /* Κυρίως Πρόγραμμα */
 int main()
 {
@@ -204,11 +216,14 @@ int main()
 //    system("chcp 1253>nul");
     struct stack *top;
     int vathmologia,answer;
+    int i;
     construct(&top);
     printf("\n");
     printf("Σύστημα καταχώρησης Βαθμολογίας φοιτητών ΕΑΠ στην ΘΕ ΠΛΗ10\n");
     printf("***********************************************************\n");
     printf("\n");
+
+    srand(time(NULL));
 
     // Εισαγωγή βαθμολογιών με αμυντικό προγραμματισμό
 //    do {
@@ -254,15 +269,24 @@ int main()
 //
 //    } while (answer==1);
 
-    push(&top, 4);
-    push(&top, 3);
-//    push(&top, 10);
-    push(&top, 1);
-    push(&top, 5);
-    push(&top, 2);
-    push(&top, 5);
-    push(&top, 9);
-    push(&top, 7);
+//    push(&top, 4);
+//    push(&top, 3);
+////    push(&top, 10);
+//    push(&top, 1);
+//    push(&top, 5);
+//    push(&top, 2);
+//    push(&top, 5);
+//    push(&top, 9);
+//    push(&top, 7);
+
+    for(i=0;i<7;i++) {
+//        printf("Number %d\n", i+1);
+        push(&top, (int)rand()%10);
+        printf("\n");
+//        show(top);
+        printf("\n");
+    }
+
 
     printf("\n");
     printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
@@ -270,13 +294,14 @@ int main()
 //    display(&top);
     show(top);
 
-    sort_Stack(&top);
 
-    printf("\n\n");
-    printf("Οι βαθμοί της στοίβας μετά την ταξινόμηση είναι:\n");
+    display(&top);
 
-    show(top);
-//    display(&top);
+//    printf("\n\n");
+//    printf("Οι βαθμοί της στοίβας μετά την ταξινόμηση είναι:\n");
+//
+//    sort_Stack(&top);
+//    show(top);
 
 
 
