@@ -279,7 +279,7 @@ int main()
 //    push(&top, 9);
 //    push(&top, 7);
 
-    for(i=0;i<7;i++) {
+    for(i=0;i<9;i++) {
 //        printf("Number %d\n", i+1);
         push(&top, (int)rand()%10);
         printf("\n");
