@@ -43,10 +43,8 @@ int pop(struct stack **);
 int top(struct stack *);
 void Insert_Sort(struct stack **, int x);
 void sort_Stack(struct stack **);
-void show(struct stack **);
+void show(struct stack *);
 void st_delete(struct stack **);
-
-void display(struct stack *);
 
 /* Αρχικοποίηση μιας άδειας στοίβας */
 void construct(struct stack **head)
@@ -156,37 +154,34 @@ void sort_Stack(struct stack **head)
 
 }
 
-// DEBUG *************
-void display(struct stack *head)
-{
-    struct stack *current = head;
-
-    printf("\nStack elements: ");
-    // Scan all the list nodes until the end (NULL)
-    while(current!=NULL) {
-        printf("%d ", current->grade); // Print data of current node
-        current = current->next; // Go to the next node
-    }
-
-    printf("\n");
-}
-
 /* ΑΝΑΔΡΟΜΙΚΗ συνάρτηση για την εμφάνιση των στοιχείων της στοίβας */
-void show(struct stack **head)
+void show(struct stack *head)
 {
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
-    if (!isEmpty(*head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
-        // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
-        grade = pop(head);
-        printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
+    struct stack *temp;
 
+
+    if (!isEmpty(head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
+        printf("\n Head in: %d head->next: %d ", (int) head , (int)head->next);
+        // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
+        grade = pop(&head);
+//        printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
+        printf("grade: %d", grade);
+
+
+//        printf("\n Head before show: %d ", (int) head );
         // Καλούμε την show() πάλι για να εξάγουμε την επόμενη τιμή
         show(head);
 
         // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
-        push(head, grade);
+        push(&head, grade);
+
+//        printf(" temp %d ", (int)temp);
+
+        printf("\n Head out: %d Grade %d %d \n", (int) head, grade, (int)head->next);
     }
+
 
 }
 
@@ -273,21 +268,21 @@ int main()
 //    push(&top, 9);
 //    push(&top, 7);
 
-    for(i=0;i<25;i++) {
+    for(i=0;i<9;i++) {
         push(&top, (int)rand()%10+1);
     }
 
     printf("\n");
     printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
 
-    show(&top);
+    show(top);
 
     printf("\n\n");
     printf("Οι βαθμοί της στοίβας μετά την ταξινόμηση είναι:\n");
 
-    sort_Stack(&top);
+//    sort_Stack(&top);
 
-    show(&top);
+    show(top);
 
     st_delete(&top); /* Απελευθέρωση της μνήμης που δέσμευσε η στοίβα */
 //    system("pause");
