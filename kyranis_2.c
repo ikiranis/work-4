@@ -169,7 +169,6 @@ void show(struct stack *head)
 //        printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
         printf("grade: %d", grade);
 
-
 //        printf("\n Head before show: %d ", (int) head );
         // Καλούμε την show() πάλι για να εξάγουμε την επόμενη τιμή
         show(head);
@@ -205,7 +204,7 @@ int main()
 //    system("chcp 1253>nul");
     struct stack *top;
     int vathmologia,answer;
-    int i;
+    int i, j, k;
     construct(&top);
     printf("\n");
     printf("Σύστημα καταχώρησης Βαθμολογίας φοιτητών ΕΑΠ στην ΘΕ ΠΛΗ10\n");
@@ -268,7 +267,7 @@ int main()
 //    push(&top, 9);
 //    push(&top, 7);
 
-    for(i=0;i<9;i++) {
+    for(i=0;i<8;i++) {
         push(&top, (int)rand()%10+1);
     }
 
