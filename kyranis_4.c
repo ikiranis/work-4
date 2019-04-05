@@ -35,12 +35,11 @@ node * freelist;       /* Λίστα ελεύθερων τμημάτων μνή�
 typedef struct mem_alloc   /* Τύπος στοιχείου του πίνακα εύρεσης του κατάλληλου μεγέθους ελεύθερου τμήματος*/
 {
     int size;			  /* Μέγεθος ελεύθερου τμήματος μνήμης σε bytes */
-//    node * mem_node;	  /* Δείκτης στον αντίστοιχο κόμβο της λίστας με τα ελεύθερα τμήματα της μνήμης. */
-    int mem_node;
+    node * mem_node;	  /* Δείκτης στον αντίστοιχο κόμβο της λίστας με τα ελεύθερα τμήματα της μνήμης. */
 }  mem_alloc;
 
 
-mem_alloc mem[N/2+1] = {{10,1}, {30,1}, {50,1}, {60,1} ,{70,1}, {80,1}};        /* Πίνακας τμημάτων μνήμης για την αποδοτική υλοποίηση του αλγόριθμου βέλτιστου ταιριάσματος. Εφόσον γειτονικά τμήματα μνήμης μπορούν να συγχωνευθούν
+mem_alloc mem[N/2+1];        /* Πίνακας τμημάτων μνήμης για την αποδοτική υλοποίηση του αλγόριθμου βέλτιστου ταιριάσματος. Εφόσον γειτονικά τμήματα μνήμης μπορούν να συγχωνευθούν
                                 αν μπορούν να γίνουν ένα ενιαίο ελεύθερο τμήμα μνήμης, το πλήθος των ελεύθερων τμημάτων είναι το πολύ Ν/2+1. */
 
 
@@ -63,7 +62,8 @@ void printfreelist()
 }
 
 // Δυαδική αναζήτηση του x μέσα στον πίνακα mem
-int searchForMem(int x) {
+int searchForMem(int x)
+{
     int left = 0;
     int right = free_items-1;
 
@@ -90,13 +90,48 @@ int searchForMem(int x) {
     return -1;
 }
 
+// Αφαίρεση κόμβου από την λίστα freelist
+int removeNode(node *myNode)
+{
+    node *current = freelist;
+
+    printf("\nREMOVE MEMORY->  \n");
+
+    while ( (current->next != NULL) || (current != myNode) ) {
+
+        printf("%p \n", current->next);
+        current = freelist->next;
+    }
+
+    printf("%p \n", current);
+
+    if(myNode->next != NULL) {
+        current->next = myNode->next;
+    }
+
+    free(current);
+
+    return 1;
+}
+
 /* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
  * Επιστρέφεται η αρχική διεύθυνση του τμήματος μνήμης που έχει επιλεγεί */
 int bestfit(int alloc)
 {
-    return searchForMem(alloc);
+    int memPosition = searchForMem(alloc);
 
+    if(memPosition == -1) {
+        return memPosition;
+    }
 
+    if (mem[memPosition].size == alloc) {
+        printf("%p ", mem[memPosition].mem_node);
+        removeNode(mem[memPosition].mem_node);
+    }
+
+    // Μείωση ελεύθερης μνήμης από τον κόμβο
+
+    return mem[memPosition].mem_node->address;
 }
 
 void returntofreelist(int address, int size) 	/* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
@@ -128,12 +163,12 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
     int i,ret1, ret2;    /* Η μεταβλητή ret1 αναπαριστά διεύθυνση, η μεταβλητή ret2 στο πρώτο πείραμα (πρώτος βρόχος)
 	   αναπαριστά διεύθυνση, και στο δεύτερο πείραμα (δεύτερος βρόχος) αναπαριστά μέγεθος μνήμης */
 
-//    init(); 				/* Αρχικοποίηση */
-//    printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+    init(); 				/* Αρχικοποίηση */
+    printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
 
-    free_items = 6;
-
-    printf("search: %d", bestfit(9));
+    ret1 = bestfit(677);	/* Δέσμευση μνήμης */
+    printf("%d\n", ret1);
+    printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
 
 //    for (i=1; i<=10; i++)   /* Ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
 //    {
