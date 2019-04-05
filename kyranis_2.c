@@ -159,24 +159,26 @@ void show(struct stack *head)
 {
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
-    if (!isEmpty(head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
-        printf("\nHead: %p head->next: %p ", head , head->next);
-        // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
-        grade = pop(&head);
+    if (isEmpty(head)) {
+        return;
+    }
+
+    printf("\nHead: %p head->next: %p ", head , head->next);
+    // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
+    grade = pop(&head);
 //        printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
-        printf("grade: %d", grade);
+    printf("grade: %d", grade);
 
 //        printf("\n Head before show: %d ", (int) head );
-        // Καλούμε την show() πάλι για να εξάγουμε την επόμενη τιμή
-        show(head);
+    // Καλούμε την show() πάλι για να εξάγουμε την επόμενη τιμή
+    show(head);
 
-        // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
-        push(&head, grade);
+    // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
+    push(&head, grade);
 
 //        printf(" temp %d ", (int)temp);
 
-        printf("\nHead: %p head->next: %p Grade %d \n",  head, head->next, grade);
-    }
+    printf("\nHead: %p head->next: %p Grade %d \n",  head, head->next, grade);
 
 
 }
