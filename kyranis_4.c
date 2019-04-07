@@ -111,11 +111,9 @@ void removeNodeFromArray(int position)
 {
     int i;
 
-    for(i=position; i<free_items; i++) {
+    for(i=position; i<free_items-1; i++) {
         mem[i] = mem[i+1];
     }
-
-    free_items--;
 }
 
 /* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
@@ -131,9 +129,14 @@ int bestfit(int alloc)
     if (mem[memPosition].size == alloc) {
         removeNodeFromList(mem[memPosition].mem_node);
         removeNodeFromArray(memPosition);
+
+        free_items--;
+
+        return mem[memPosition].mem_node->address;
     }
 
-    // Μείωση ελεύθερης μνήμης από τον κόμβο
+    mem[memPosition].mem_node->size -= alloc;
+    mem[memPosition].mem_node->address += alloc;
 
     return mem[memPosition].mem_node->address;
 }
@@ -170,21 +173,18 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
     init(); 				/* Αρχικοποίηση */
     printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
 
-    ret1 = bestfit(677);	/* Δέσμευση μνήμης */
-    printf("%d\n", ret1);
-    printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
 
-//    for (i=1; i<=10; i++)   /* Ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
-//    {
-//        ret1= bestfit(i);	/* Δέσμευση μνήμης */
-//        printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-//
-//        ret2= bestfit(4*i); /* Δέσμευση μνήμης */
-//        printfreelist();	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-//
-//        if (ret1!=-1) returntofreelist(ret1, i);  /* Επιστροφή δεσμευμένου τμήματος */
-//        printfreelist();						  /* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-//    }
+    for (i=1; i<=10; i++)   /* Ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
+    {
+        ret1= bestfit(i);	/* Δέσμευση μνήμης */
+        printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+
+        ret2= bestfit(4*i); /* Δέσμευση μνήμης */
+        printfreelist();	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+
+        if (ret1!=-1) returntofreelist(ret1, i);  /* Επιστροφή δεσμευμένου τμήματος */
+        printfreelist();						  /* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+    }
 //
 //    for (i=1; i<=10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
 //    {
