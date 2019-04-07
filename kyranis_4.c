@@ -137,11 +137,13 @@ int bestfit(int alloc)
 
     mem[memPosition].mem_node->size -= alloc;
     mem[memPosition].mem_node->address += alloc;
+    mem[memPosition].size -= alloc;
 
     return mem[memPosition].mem_node->address;
 }
 
-void returntofreelist(int address, int size) 	/* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
+/* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
+void returntofreelist(int address, int size)
 {
     /* ΒΑΛΤΕ ΕΔΩ ΤΟΝ ΚΩΔΙΚΑ ΣΑΣ */
 }
