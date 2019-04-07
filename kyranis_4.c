@@ -87,31 +87,35 @@ int searchForMem(int x)
     }
 
     // Όταν το left περάσει τα όρια του right, τότε σημαίνει ότι το στοιχείο δεν βρέθηκε
-    return -1;
+    return 0;
 }
 
 // Αφαίρεση κόμβου από την λίστα freelist
-int removeNode(node *myNode)
+void removeNodeFromList(node *myNode)
 {
     node *current = freelist;
 
-    printf("\nREMOVE MEMORY->  \n");
-
     while ( (current->next != NULL) || (current != myNode) ) {
-
-        printf("%p \n", current->next);
         current = freelist->next;
     }
-
-    printf("%p \n", current);
 
     if(myNode->next != NULL) {
         current->next = myNode->next;
     }
 
     free(current);
+}
 
-    return 1;
+// Αφαίρεση κόμβου από τον πίνακα
+void removeNodeFromArray(int position)
+{
+    int i;
+
+    for(i=position; i<free_items; i++) {
+        mem[i] = mem[i+1];
+    }
+
+    free_items--;
 }
 
 /* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
@@ -120,13 +124,13 @@ int bestfit(int alloc)
 {
     int memPosition = searchForMem(alloc);
 
-    if(memPosition == -1) {
-        return memPosition;
+    if(memPosition) {
+        return -1;
     }
 
     if (mem[memPosition].size == alloc) {
-        printf("%p ", mem[memPosition].mem_node);
-        removeNode(mem[memPosition].mem_node);
+        removeNodeFromList(mem[memPosition].mem_node);
+        removeNodeFromArray(memPosition);
     }
 
     // Μείωση ελεύθερης μνήμης από τον κόμβο
