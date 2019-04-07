@@ -52,6 +52,7 @@ void printfreelist()
     node *current = freelist;
 
     printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
+
     while(current!=NULL) {
         printf("(%d, %d)->", current->address, current->size);
 
@@ -145,7 +146,16 @@ int bestfit(int alloc)
 /* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
 void returntofreelist(int address, int size)
 {
-    // (1) Βρίσκω την θέση της address
+    node *current = freelist;
+
+    // (1) Βρίσκω την θέση της address. Διαπέραση της λίστας μέχρι το σημείο της διεύθυνσης
+
+    while(current->next->address < address) {
+//        printf("(%d, %d)->", current->address, current->size);
+
+        current = freelist->next;
+    }
+
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
 
