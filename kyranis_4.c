@@ -143,23 +143,61 @@ int bestfit(int alloc)
     return mem[memPosition].mem_node->address;
 }
 
+int insertNodeToList(node *myNode, int address, int size)
+{
+    node *current = freelist;
+    node *new = (node *) malloc(sizeof(node));
+
+    while( current->next != myNode && current->next != NULL ) {
+        current = current->next;
+    }
+
+    printf("\n New  %d %d \n", current->address, current->size);
+
+
+    if(new == NULL) {
+        return 0;
+    }
+
+
+    new->address = address;
+    new->size = size;
+    new->next = myNode;
+
+    if(current == freelist) {
+        freelist = new;
+    }
+
+
+    return 1;
+}
+
 /* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
 void returntofreelist(int address, int size)
 {
     node *current = freelist;
+    node *previous = NULL;
+
+    printf("\n Free %d %d \n", address, size);
 
     // (1) Βρίσκω την θέση της address. Διαπέραση της λίστας μέχρι το σημείο της διεύθυνσης
 
-    while(current->next->address < address) {
+    while( (address < current->address) && (current->next != NULL) ) {
 //        printf("(%d, %d)->", current->address, current->size);
 
-        current = freelist->next;
+        previous = current;
+
+        current = current->next;
     }
+
+    printf("\n Founded  %d %d \n", current->address, current->size);
 
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
+
+    insertNodeToList(current, address, size);
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
