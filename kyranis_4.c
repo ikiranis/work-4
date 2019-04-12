@@ -125,9 +125,9 @@ int bestfit(int alloc)
 {
     int memPosition = searchForMem(alloc);
 
-    if(memPosition) {
-        return -1;
-    }
+//    if(!memPosition) {
+//        return -1;
+//    }
 
     if (mem[memPosition].size == alloc) {
         removeNodeFromList(mem[memPosition].mem_node);
@@ -141,6 +141,7 @@ int bestfit(int alloc)
     mem[memPosition].mem_node->size -= alloc;
     mem[memPosition].mem_node->address += alloc;
     mem[memPosition].size -= alloc;
+
 
     return mem[memPosition].mem_node->address;
 }
@@ -194,7 +195,6 @@ int insertNodeToArray(node *myNode, int size)
     free_items++;
 
     printMem();
-
 }
 
 
@@ -263,7 +263,6 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
 
     init(); 				/* Αρχικοποίηση */
     printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-
 
     for (i=1; i<=10; i++)   /* Ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
     {
