@@ -114,6 +114,7 @@ void removeNodeFromArray(int position)
     int i;
 
     for(i=position; i<free_items-1; i++) {
+        // Κύληση όλων των στοιχείων μια θέση αριστερά
         mem[i] = mem[i+1];
     }
 }
@@ -145,7 +146,7 @@ int bestfit(int alloc)
 }
 
 // Εισάγει ένα νέο node στην λίστα, πριν από το myNode
-int insertNodeToList(node *previous, node *myNode, int address, int size)
+node * insertNodeToList(node *previous, node *myNode, int address, int size)
 {
     node *new = (node *) malloc(sizeof(node));
 
@@ -158,14 +159,51 @@ int insertNodeToList(node *previous, node *myNode, int address, int size)
         freelist = previous;
     }
 
-    return 1;
+    return new;
 }
+
+// TEMP FUNCTION *********************
+void printMem()
+{
+    int j;
+
+    for(j=0; j<free_items; j++) {
+        printf("%d\t", mem[j].size);
+    }
+
+    printf("\n");
+}
+
+// Εισάγει έναν νέο κόμβο στον πίνακα mem[]
+int insertNodeToArray(node *myNode, int size)
+{
+    int i, j, currentPosition;
+
+    for(i=0; (mem[i].size>size || i<free_items); i++);
+
+    currentPosition = i-1;
+
+    for(j=free_items; j>currentPosition; j--) {
+        // Κύληση όλων των στοιχείων μια θέση δεξιά
+        mem[j] = mem[j-1];
+    }
+
+    mem[currentPosition].size = size;
+    mem[currentPosition].mem_node = myNode;
+
+    free_items++;
+
+    printMem();
+
+}
+
 
 /* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
 void returntofreelist(int address, int size)
 {
     node *current = freelist;
     node *previous = NULL;
+    node *newNode;
 
     int currentAddress = 0;
 
@@ -191,9 +229,8 @@ void returntofreelist(int address, int size)
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
-
-    insertNodeToList(previous, current, currentAddress, size);
-    // TODO προσθήκη και σε mem[]
+    newNode = insertNodeToList(previous, current, currentAddress, size);
+    insertNodeToArray(newNode, size);
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
