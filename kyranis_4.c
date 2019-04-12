@@ -56,7 +56,7 @@ void printfreelist()
     while(current!=NULL) {
         printf("(%d, %d)->", current->address, current->size);
 
-        current = freelist->next;
+        current = current->next;
     }
 
     printf("\n");
@@ -143,31 +143,20 @@ int bestfit(int alloc)
     return mem[memPosition].mem_node->address;
 }
 
-int insertNodeToList(node *myNode, int address, int size)
+// Εισάγει ένα νέο node στην λίστα, πριν από το myNode
+int insertNodeToList(node *previous, node *myNode, int address, int size)
 {
-    node *current = freelist;
     node *new = (node *) malloc(sizeof(node));
-
-    while( current->next != myNode && current->next != NULL ) {
-        current = current->next;
-    }
-
-    printf("\n New  %d %d \n", current->address, current->size);
-
-
-    if(new == NULL) {
-        return 0;
-    }
-
 
     new->address = address;
     new->size = size;
     new->next = myNode;
+    previous = new;
 
-    if(current == freelist) {
-        freelist = new;
+
+    if(myNode == freelist) {
+        freelist = previous;
     }
-
 
     return 1;
 }
@@ -197,7 +186,7 @@ void returntofreelist(int address, int size)
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
 
-    insertNodeToList(current, address, size);
+    insertNodeToList(previous, current, address, size);
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
