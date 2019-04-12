@@ -154,10 +154,12 @@ node * insertNodeToList(node *previous, node *myNode, int address, int size)
     new->address = address;
     new->size = size;
     new->next = myNode;
-    previous = new;
+
 
     if(myNode == freelist) {
-        freelist = previous;
+        freelist = new;
+    } else {
+        previous->next = new;
     }
 
     return new;
@@ -207,18 +209,14 @@ void returntofreelist(int address, int size)
 
     int currentAddress = 0;
 
-    if (current == NULL) {
+    if (freelist == NULL) {
         printf("Η λίστα είναι άδεια\n");
         return;
     }
 
     // (1) Βρίσκω την θέση της address. Διαπέραση της λίστας μέχρι το σημείο της διεύθυνσης
 
-    while( current->next != NULL ) {
-
-        if(address > current->address) {
-            break;
-        }
+    while( (current->next != NULL) || (address > current->address)) {
 
         previous = current;
 
@@ -229,7 +227,7 @@ void returntofreelist(int address, int size)
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
-    newNode = insertNodeToList(previous, current, currentAddress, size);
+    newNode = insertNodeToList(previous, current, address, size);
     insertNodeToArray(newNode, size);
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
