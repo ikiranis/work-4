@@ -51,7 +51,8 @@ void printfreelist()
 {
     node *current = freelist;
 
-    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
+//    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
+    printf(": ");
 
     while(current!=NULL) {
         printf("(%d, %d)->", current->address, current->size);
@@ -153,7 +154,6 @@ int insertNodeToList(node *previous, node *myNode, int address, int size)
     new->next = myNode;
     previous = new;
 
-
     if(myNode == freelist) {
         freelist = previous;
     }
@@ -167,26 +167,33 @@ void returntofreelist(int address, int size)
     node *current = freelist;
     node *previous = NULL;
 
-    printf("\n Free %d %d \n", address, size);
+    int currentAddress = 0;
+
+    if (current == NULL) {
+        printf("Η λίστα είναι άδεια\n");
+        return;
+    }
 
     // (1) Βρίσκω την θέση της address. Διαπέραση της λίστας μέχρι το σημείο της διεύθυνσης
 
-    while( (address < current->address) && (current->next != NULL) ) {
-//        printf("(%d, %d)->", current->address, current->size);
+    while( current->next != NULL ) {
+
+        if(address > current->address) {
+            break;
+        }
 
         previous = current;
 
+        currentAddress = current->address - current->size;
         current = current->next;
     }
-
-    printf("\n Founded  %d %d \n", current->address, current->size);
-
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
 
-    insertNodeToList(previous, current, address, size);
+    insertNodeToList(previous, current, currentAddress, size);
+    // TODO προσθήκη και σε mem[]
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
