@@ -89,7 +89,7 @@ int searchForMem(int x)
     }
 
     // Όταν το left περάσει τα όρια του right, τότε σημαίνει ότι το στοιχείο δεν βρέθηκε
-    return 0;
+    return -1;
 }
 
 // Αφαίρεση κόμβου από την λίστα freelist
@@ -125,10 +125,11 @@ int bestfit(int alloc)
 {
     int memPosition = searchForMem(alloc);
 
-//    if(!memPosition) {
-//        return -1;
-//    }
+    if(memPosition == -1) {
+        return memPosition;
+    }
 
+    // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
     if (mem[memPosition].size == alloc) {
         removeNodeFromList(mem[memPosition].mem_node);
         removeNodeFromArray(memPosition);
@@ -138,10 +139,12 @@ int bestfit(int alloc)
         return mem[memPosition].mem_node->address;
     }
 
+    // Αν δεν βρεθεί ακριβώς ο χώρος. Αλλάζει τις διαστάσεις του συγκεκριμένου κόμβου
     mem[memPosition].mem_node->size -= alloc;
     mem[memPosition].mem_node->address += alloc;
     mem[memPosition].size -= alloc;
 
+    int temp = mem[memPosition].mem_node->address;
 
     return mem[memPosition].mem_node->address;
 }
@@ -195,8 +198,6 @@ int insertNodeToArray(node *myNode, int size)
     mem[currentPosition].mem_node = myNode;
 
     free_items++;
-
-    printMem();
 }
 
 
@@ -206,8 +207,6 @@ void returntofreelist(int address, int size)
     node *current = freelist;
     node *previous = NULL;
     node *newNode;
-
-    int currentAddress = 0;
 
     if (freelist == NULL) {
         printf("Η λίστα είναι άδεια\n");
@@ -220,9 +219,11 @@ void returntofreelist(int address, int size)
 
         previous = current;
 
-        currentAddress = current->address - current->size;
         current = current->next;
     }
+
+    // Υπολογισμός της διεύθυνσης που θα απελευθερωθεί
+    address = address - size;
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
 
