@@ -235,6 +235,9 @@ void returntofreelist(int address, int size)
     node *previous = NULL;
     node *newNode;
 
+    int needLeftMerge = 0;
+    int needRightMerge = 0;
+
     if (freelist == NULL) {
         printf("Η λίστα είναι άδεια\n");
         return;
@@ -253,27 +256,29 @@ void returntofreelist(int address, int size)
 //    address = address - size; // TODO δεν ξέρω αν ειναι αυτός ο σωστός τρόπος. Μετά την συγχώνευση ίσως δεν χρειάζεται
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
-
     if(previous) {
-        if(checkLeftNode(previous, address)) {
-            printf("\nΠρέπει να γίνει συγχώνευση προς τα αριστερά!\n");
-        } else {
-            printf("\nΔΕΝ πρέπει να γίνει συγχώνευση προς τα αριστερά!\n");
-        }
+        needLeftMerge = checkLeftNode(previous, address);
     }
 
-    if(checkRightNode(current, address)) {
-        printf("\nΠρέπει να γίνει συγχώνευση προς τα δεξιά!\n");
-    } else {
-        printf("\nΔΕΝ πρέπει να γίνει συγχώνευση προς τα δεξιά!\n");
-    }
-
+    needRightMerge = checkRightNode(current, address);
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
-    newNode = insertNodeToList(previous, current, address, size);
-    insertNodeToArray(newNode, size);
+    if(!needLeftMerge && !needRightMerge) {
+        newNode = insertNodeToList(previous, current, address, size);
+        insertNodeToArray(newNode, size);
+    }
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
+
+    // Αν πρέπει να συγχωνευτεί με το αριστερό node
+    if(needLeftMerge && !needRightMerge) {
+        // Αλλαγή του previous με το νέο μέγεθος
+    }
+
+    // Αν πρέπει να συγχωνευτεί με το δεξί node
+    if(!needLeftMerge && needRightMerge) {
+        // Αλλαγή του current με την νέα διεύθυνση και μέγεθος
+    }
 
     // (5) Αν γίνει συγχώνευση και με το αριστερό και με το δεξιό, διαγραφή του δεξιού
 }
