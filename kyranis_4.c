@@ -200,6 +200,33 @@ int insertNodeToArray(node *myNode, int size)
     free_items++;
 }
 
+// Έλεγχος αν υπάρχει αριστερά από το address κομμάτι που μπορεί να συγχωνευτεί
+int checkLeftNode(node *myNode, int address)
+{
+    int end = myNode->address + myNode->size;
+
+    // Όταν η διεύθυνση είναι μεγαλύτερη από το τέλος του προηγούμενου κόμβου
+    if (address > end) {
+        return 0;
+    }
+
+    // Όταν μπορεί να υπάρξει συγχώνευση
+    return 1;
+}
+
+// Έλεγχος αν υπάρχει δεξιά από το address κομμάτι που μπορεί να συγχωνευτεί
+int checkRightNode(node *myNode, int address)
+{
+//    int start = myNode->address + myNode->size;
+
+    // Όταν η διεύθυνση είναι μεγαλύτερη από το τέλος του προηγούμενου κόμβου
+    if (address < myNode->address) {
+        return 0;
+    }
+
+    // Όταν μπορεί να υπάρξει συγχώνευση
+    return 1;
+}
 
 /* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
 void returntofreelist(int address, int size)
@@ -223,9 +250,24 @@ void returntofreelist(int address, int size)
     }
 
     // Υπολογισμός της διεύθυνσης που θα απελευθερωθεί
-    address = address - size;
+//    address = address - size; // TODO δεν ξέρω αν ειναι αυτός ο σωστός τρόπος. Μετά την συγχώνευση ίσως δεν χρειάζεται
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
+
+    if(previous) {
+        if(checkLeftNode(previous, address)) {
+            printf("\nΠρέπει να γίνει συγχώνευση προς τα αριστερά!\n");
+        } else {
+            printf("\nΔΕΝ πρέπει να γίνει συγχώνευση προς τα αριστερά!\n");
+        }
+    }
+
+    if(checkRightNode(current, address)) {
+        printf("\nΠρέπει να γίνει συγχώνευση προς τα δεξιά!\n");
+    } else {
+        printf("\nΔΕΝ πρέπει να γίνει συγχώνευση προς τα δεξιά!\n");
+    }
+
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
     newNode = insertNodeToList(previous, current, address, size);
@@ -261,19 +303,28 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
 	   αναπαριστά διεύθυνση, και στο δεύτερο πείραμα (δεύτερος βρόχος) αναπαριστά μέγεθος μνήμης */
 
     init(); 				/* Αρχικοποίηση */
-    printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+//    printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
 
-    for (i=1; i<=10; i++)   /* Ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
-    {
-        ret1= bestfit(i);	/* Δέσμευση μνήμης */
-        printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+    ret1= bestfit(10);	/* Δέσμευση μνήμης */
+    printfreelist();
+    returntofreelist(ret1, 12);
+    printfreelist();
+    ret1= bestfit(15);	/* Δέσμευση μνήμης */
+    printfreelist();
+    returntofreelist(ret1, 5);
+    printfreelist();
 
-        ret2= bestfit(4*i); /* Δέσμευση μνήμης */
-        printfreelist();	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-
-        if (ret1!=-1) returntofreelist(ret1, i);  /* Επιστροφή δεσμευμένου τμήματος */
-        printfreelist();						  /* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-    }
+//    for (i=1; i<=10; i++)   /* Ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
+//    {
+//        ret1= bestfit(i);	/* Δέσμευση μνήμης */
+//        printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+//
+//        ret2= bestfit(4*i); /* Δέσμευση μνήμης */
+//        printfreelist();	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+//
+//        if (ret1!=-1) returntofreelist(ret1, i);  /* Επιστροφή δεσμευμένου τμήματος */
+//        printfreelist();						  /* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
+//    }
 //
 //    for (i=1; i<=10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
 //    {
