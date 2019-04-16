@@ -69,19 +69,15 @@ int searchForMem(int x)
     int left = 0;
     int right = free_items-1;
 
+    // TODO search don't working
+
     // Όσο το αριστερό όριο είναι μικρότερο ή ίσο του δεξιού (έχουν μείνει στοιχεία στον πίνακα)
     while (left <= right) {
         // Βρίσκουμε την μέση του πίνακα
         int middle = (left + right) / 2;
 
-        int temp = mem[middle].size;
-
-        if (x == mem[middle].size) {
-            return middle;
-        }
-
         // Αν το x βρίσκεται ανάμεσα στο προηγούμενο στοιχείο του μεσαίου και στο μεσαίο
-        if ( (x > mem[middle-1].size) && (x < mem[middle].size) ) {
+        if ( (x > mem[middle-1].size) && (x <= mem[middle].size) ) {
             return middle;
         }
 
