@@ -74,8 +74,14 @@ int searchForMem(int x)
         // Βρίσκουμε την μέση του πίνακα
         int middle = (left + right) / 2;
 
+        int temp = mem[middle].size;
+
+        if (x == mem[middle].size) {
+            return middle;
+        }
+
         // Αν το x βρίσκεται ανάμεσα στο προηγούμενο στοιχείο του μεσαίου και στο μεσαίο
-        if ( (x > mem[middle-1].size) && (x <= mem[middle].size) ) {
+        if ( (x > mem[middle-1].size) && (x < mem[middle].size) ) {
             return middle;
         }
 
@@ -129,16 +135,15 @@ int bestfit(int alloc)
         return memPosition;
     }
 
-    int temp = mem[memPosition].size;
-
     // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
     if (mem[memPosition].size == alloc) {
+        int freeAddress = mem[memPosition].mem_node->address;
         removeNodeFromList(mem[memPosition].mem_node);
         removeNodeFromArray(memPosition);
 
         free_items--;
 
-        return mem[memPosition].mem_node->address;
+        return freeAddress;
     }
 
     int oldAddress = mem[memPosition].mem_node->address;
