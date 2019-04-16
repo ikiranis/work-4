@@ -103,15 +103,13 @@ void removeNodeFromList(node *myNode)
 {
     node *current = freelist;
 
-    while ( (current->next != NULL) && (current != myNode) ) {
+    while ( (current->next != NULL) && (current->next != myNode) ) {
         current = current->next;
     }
 
-    if(myNode->next != NULL) {
-        current->next = myNode->next;
-    }
+    current->next = myNode->next;
 
-    free(current);
+    free(myNode);
 }
 
 // Αφαίρεση κόμβου από τον πίνακα
