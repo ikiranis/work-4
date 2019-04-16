@@ -235,6 +235,7 @@ void returntofreelist(int address, int size)
     node *previous = NULL;
     node *newNode;
 
+    int position = 0;
     int needLeftMerge = 0;
     int needRightMerge = 0;
 
@@ -250,6 +251,7 @@ void returntofreelist(int address, int size)
         previous = current;
 
         current = current->next;
+        position++;
     }
 
     // Υπολογισμός της διεύθυνσης που θα απελευθερωθεί
@@ -273,6 +275,8 @@ void returntofreelist(int address, int size)
     // Αν πρέπει να συγχωνευτεί με το αριστερό node
     if(needLeftMerge && !needRightMerge) {
         // Αλλαγή του previous με το νέο μέγεθος
+        previous->size += size;
+        mem[position].size += size;
     }
 
     // Αν πρέπει να συγχωνευτεί με το δεξί node
