@@ -276,12 +276,15 @@ void returntofreelist(int address, int size)
     if(needLeftMerge && !needRightMerge) {
         // Αλλαγή του previous με το νέο μέγεθος
         previous->size += size;
-        mem[position].size += size;
+        mem[position-1].size += size;
     }
 
     // Αν πρέπει να συγχωνευτεί με το δεξί node
     if(!needLeftMerge && needRightMerge) {
         // Αλλαγή του current με την νέα διεύθυνση και μέγεθος
+        current->address = address;
+        current->size += size;
+        mem[position].size += size;
     }
 
     // (5) Αν γίνει συγχώνευση και με το αριστερό και με το δεξιό, διαγραφή του δεξιού
