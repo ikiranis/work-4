@@ -185,9 +185,9 @@ int insertNodeToArray(node *myNode, int size)
 {
     int i, j, currentPosition;
 
-    for(i=0; (mem[i].size>size || i<free_items); i++);
+    for(i=0; (mem[i].size<size); i++);
 
-    currentPosition = i-1;
+    currentPosition = i;
 
     for(j=free_items; j>currentPosition; j--) {
         // Κύληση όλων των στοιχείων μια θέση δεξιά
@@ -198,6 +198,7 @@ int insertNodeToArray(node *myNode, int size)
     mem[currentPosition].mem_node = myNode;
 
     free_items++;
+
 }
 
 // Έλεγχος αν υπάρχει αριστερά από το address κομμάτι που μπορεί να συγχωνευτεί
@@ -269,6 +270,7 @@ void returntofreelist(int address, int size)
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
+    // TODO όταν αλλάζει size στον memp[] θα πρέπει να κάνει και σορτάρισμα νέο
     // Αν πρέπει να συγχωνευτεί με το αριστερό node
     if(needLeftMerge && !needRightMerge) {
         // Αλλαγή του previous με το νέο μέγεθος
@@ -352,17 +354,23 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
 
     for (i=0; i<10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
     {
+        printMem();
+
         printf("Δώσε μέγεθος μνήμης για δέσμευση: %d\n", testArray1[i]);
         ret2 = testArray1[i];
         ret1= bestfit(ret2);
         if (ret1!=-1) printf("Υπάρχει διαθέσιμη μνήμη στη διεύθυνση %d.\n", ret1);
         printfreelist();
 
+        printf("\nfree Items %d\n", free_items);
+
         printf("Δώσε μνήμη για αποδέσμευση (διεύθυνση, μέγεθος): %d %d\n", testArray2[i][0], testArray2[i][1]);
         ret1 = testArray2[i][0];
         ret2 = testArray2[i][1];
         returntofreelist(ret1, ret2);
         printfreelist();
+        printf("\nfree Items %d\n", free_items);
+
     }
 
 //    system("pause");
