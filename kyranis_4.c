@@ -97,8 +97,8 @@ void removeNodeFromList(node *myNode)
 {
     node *current = freelist;
 
-    while ( (current->next != NULL) || (current != myNode) ) {
-        current = freelist->next;
+    while ( (current->next != NULL) && (current != myNode) ) {
+        current = current->next;
     }
 
     if(myNode->next != NULL) {
@@ -129,6 +129,8 @@ int bestfit(int alloc)
         return memPosition;
     }
 
+    int temp = mem[memPosition].size;
+
     // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
     if (mem[memPosition].size == alloc) {
         removeNodeFromList(mem[memPosition].mem_node);
@@ -144,8 +146,6 @@ int bestfit(int alloc)
     mem[memPosition].mem_node->size -= alloc;
     mem[memPosition].mem_node->address += alloc;
     mem[memPosition].size -= alloc;
-
-    int temp = mem[memPosition].mem_node->address;
 
     return oldAddress;
 }
