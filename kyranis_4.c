@@ -215,12 +215,12 @@ int checkLeftNode(node *myNode, int address)
 }
 
 // Έλεγχος αν υπάρχει δεξιά από το address κομμάτι που μπορεί να συγχωνευτεί
-int checkRightNode(node *myNode, int address)
+int checkRightNode(node *myNode, int end)
 {
 //    int start = myNode->address + myNode->size;
 
     // Όταν η διεύθυνση είναι μεγαλύτερη από το τέλος του προηγούμενου κόμβου
-    if (address < myNode->address) {
+    if (end < myNode->address) {
         return 0;
     }
 
@@ -260,7 +260,7 @@ void returntofreelist(int address, int size)
         needLeftMerge = checkLeftNode(previous, address);
     }
 
-    needRightMerge = checkRightNode(current, address);
+    needRightMerge = checkRightNode(current, address + size);
 
     // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
     if(!needLeftMerge && !needRightMerge) {
