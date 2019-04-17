@@ -69,8 +69,6 @@ int searchForMem(int x)
     int left = 0;
     int right = free_items-1;
 
-    // TODO search don't working
-
     // Όσο το αριστερό όριο είναι μικρότερο ή ίσο του δεξιού (έχουν μείνει στοιχεία στον πίνακα)
     while (left <= right) {
         // Βρίσκουμε την μέση του πίνακα
@@ -109,14 +107,21 @@ void removeNodeFromList(node *myNode)
 }
 
 // Αφαίρεση κόμβου από τον πίνακα
-void removeNodeFromArray(int position)
+void removeNodeFromArray(node *myNode)
 {
-    int i;
+
+    int i, j, position;
+
+    for(i=0; mem[i].mem_node == myNode; i++);
+
+    position = i;
 
     for(i=position; i<free_items-1; i++) {
         // Κύληση όλων των στοιχείων μια θέση αριστερά
         mem[i] = mem[i+1];
     }
+
+    free_items--;
 }
 
 /* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
@@ -133,7 +138,7 @@ int bestfit(int alloc)
     if (mem[memPosition].size == alloc) {
         int freeAddress = mem[memPosition].mem_node->address;
         removeNodeFromList(mem[memPosition].mem_node);
-        removeNodeFromArray(memPosition);
+        removeNodeFromArray(mem[memPosition].mem_node);
 
         free_items--;
 
@@ -271,14 +276,13 @@ void returntofreelist(int address, int size)
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
-    // TODO το position του mem δεν είναι στην ίδια θέση που έχει και στο freelist! Πρέπει να αναφαίρομαι στο position του mem αλλιώς
     // Αν πρέπει να συγχωνευτεί με το αριστερό node
     if(needLeftMerge && !needRightMerge) {
         // Αλλαγή του previous με το νέο μέγεθος
         previous->size += size;
 
         tempSize = mem[position-1].size + size;
-        removeNodeFromArray(position-1);
+        removeNodeFromArray(previous);
         insertNodeToArray(previous, tempSize);
 
     }
@@ -290,7 +294,7 @@ void returntofreelist(int address, int size)
         current->size += size;
 
         tempSize = mem[position].size + size;
-        removeNodeFromArray(position);
+        removeNodeFromArray(current);
         insertNodeToArray(current, tempSize);
     }
 
@@ -301,14 +305,11 @@ void returntofreelist(int address, int size)
 //        mem[position-1].size += size + current->size;
 
         tempSize = previous->size;
-        removeNodeFromArray(position-1);
+        removeNodeFromArray(previous);
         insertNodeToArray(previous, tempSize);
-        free_items--;
 
         removeNodeFromList(current);
-        removeNodeFromArray(position-1);
-        free_items--;
-
+        removeNodeFromArray(current);
     }
 }
 
@@ -370,6 +371,7 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
 
     for (i=0; i<10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
     {
+        printf("\n");
         printMem();
 
         printf("Δώσε μέγεθος μνήμης για δέσμευση: %d\n", testArray1[i]);
