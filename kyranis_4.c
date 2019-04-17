@@ -198,7 +198,6 @@ int insertNodeToArray(node *myNode, int size)
     mem[currentPosition].mem_node = myNode;
 
     free_items++;
-
 }
 
 // Έλεγχος αν υπάρχει αριστερά από το address κομμάτι που μπορεί να συγχωνευτεί
@@ -240,6 +239,8 @@ void returntofreelist(int address, int size)
     int needLeftMerge = 0;
     int needRightMerge = 0;
 
+    int tempSize;
+
     if (freelist == NULL) {
         printf("Η λίστα είναι άδεια\n");
         return;
@@ -270,12 +271,16 @@ void returntofreelist(int address, int size)
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
-    // TODO όταν αλλάζει size στον memp[] θα πρέπει να κάνει και σορτάρισμα νέο
+    // TODO το position του mem δεν είναι ίδια θέση που έχει και στο freelist!
     // Αν πρέπει να συγχωνευτεί με το αριστερό node
     if(needLeftMerge && !needRightMerge) {
         // Αλλαγή του previous με το νέο μέγεθος
         previous->size += size;
-        mem[position-1].size += size;
+
+        tempSize = mem[position-1].size + size;
+        removeNodeFromArray(position-1);
+        insertNodeToArray(previous, tempSize);
+
     }
 
     // Αν πρέπει να συγχωνευτεί με το δεξί node
@@ -283,16 +288,27 @@ void returntofreelist(int address, int size)
         // Αλλαγή του current με την νέα διεύθυνση και μέγεθος
         current->address = address;
         current->size += size;
-        mem[position].size += size;
+
+        tempSize = mem[position].size + size;
+        removeNodeFromArray(position);
+        insertNodeToArray(current, tempSize);
     }
 
     // (5) Αν γίνει συγχώνευση και με το αριστερό και με το δεξιό, διαγραφή του δεξιού
     if(needLeftMerge && needRightMerge) {
         previous->size += size + current->size;
-        mem[position-1].size += size + current->size;
-        removeNodeFromList(current);
-        removeNodeFromArray(position);
+
+//        mem[position-1].size += size + current->size;
+
+        tempSize = previous->size;
+        removeNodeFromArray(position-1);
+        insertNodeToArray(previous, tempSize);
         free_items--;
+
+        removeNodeFromList(current);
+        removeNodeFromArray(position-1);
+        free_items--;
+
     }
 }
 
@@ -362,15 +378,11 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
         if (ret1!=-1) printf("Υπάρχει διαθέσιμη μνήμη στη διεύθυνση %d.\n", ret1);
         printfreelist();
 
-        printf("\nfree Items %d\n", free_items);
-
         printf("Δώσε μνήμη για αποδέσμευση (διεύθυνση, μέγεθος): %d %d\n", testArray2[i][0], testArray2[i][1]);
         ret1 = testArray2[i][0];
         ret2 = testArray2[i][1];
         returntofreelist(ret1, ret2);
         printfreelist();
-        printf("\nfree Items %d\n", free_items);
-
     }
 
 //    system("pause");
