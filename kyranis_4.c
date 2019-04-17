@@ -271,7 +271,7 @@ void returntofreelist(int address, int size)
 
     // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
 
-    // TODO το position του mem δεν είναι ίδια θέση που έχει και στο freelist!
+    // TODO το position του mem δεν είναι στην ίδια θέση που έχει και στο freelist! Πρέπει να αναφαίρομαι στο position του mem αλλιώς
     // Αν πρέπει να συγχωνευτεί με το αριστερό node
     if(needLeftMerge && !needRightMerge) {
         // Αλλαγή του previous με το νέο μέγεθος
