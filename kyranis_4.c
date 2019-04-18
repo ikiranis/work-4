@@ -106,15 +106,20 @@ void removeNodeFromList(node *myNode)
     free(myNode);
 }
 
-// Αφαίρεση κόμβου από τον πίνακα
-void removeNodeFromArray(node *myNode)
+// Επιστρέφει την θέση στον πίνακα mem[] που δείχνει προς τον κόμβο myNode
+int findArrayPosition(node *myNode)
 {
+    int i;
 
-    int i, j, position;
+    for(i=0; mem[i].mem_node != myNode; i++);
 
-    for(i=0; mem[i].mem_node == myNode; i++);
+    return i;
+}
 
-    position = i;
+// Αφαίρεση κόμβου από τον πίνακα
+void removeNodeFromArray(int position)
+{
+    int i;
 
     for(i=position; i<free_items-1; i++) {
         // Κύληση όλων των στοιχείων μια θέση αριστερά
@@ -137,10 +142,10 @@ int bestfit(int alloc)
     // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
     if (mem[memPosition].size == alloc) {
         int freeAddress = mem[memPosition].mem_node->address;
-        removeNodeFromList(mem[memPosition].mem_node);
-        removeNodeFromArray(mem[memPosition].mem_node);
+        int position = findArrayPosition(mem[memPosition].mem_node);
 
-        free_items--;
+        removeNodeFromList(mem[memPosition].mem_node);
+        removeNodeFromArray(position);
 
         return freeAddress;
     }
@@ -240,7 +245,7 @@ void returntofreelist(int address, int size)
     node *previous = NULL;
     node *newNode;
 
-    int position = 0;
+    int position;
     int needLeftMerge = 0;
     int needRightMerge = 0;
 
@@ -258,7 +263,6 @@ void returntofreelist(int address, int size)
         previous = current;
 
         current = current->next;
-        position++;
     }
 
     // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
@@ -281,8 +285,10 @@ void returntofreelist(int address, int size)
         // Αλλαγή του previous με το νέο μέγεθος
         previous->size += size;
 
+        position = findArrayPosition(previous);
+
         tempSize = mem[position-1].size + size;
-        removeNodeFromArray(previous);
+        removeNodeFromArray(position);
         insertNodeToArray(previous, tempSize);
 
     }
@@ -293,8 +299,10 @@ void returntofreelist(int address, int size)
         current->address = address;
         current->size += size;
 
+        position = findArrayPosition(current);
+
         tempSize = mem[position].size + size;
-        removeNodeFromArray(current);
+        removeNodeFromArray(position);
         insertNodeToArray(current, tempSize);
     }
 
@@ -302,14 +310,16 @@ void returntofreelist(int address, int size)
     if(needLeftMerge && needRightMerge) {
         previous->size += size + current->size;
 
-//        mem[position-1].size += size + current->size;
+        position = findArrayPosition(previous);
 
         tempSize = previous->size;
-        removeNodeFromArray(previous);
+        removeNodeFromArray(position);
         insertNodeToArray(previous, tempSize);
 
+        position = findArrayPosition(current);
+
         removeNodeFromList(current);
-        removeNodeFromArray(current);
+        removeNodeFromArray(position);
     }
 }
 
