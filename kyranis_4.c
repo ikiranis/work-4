@@ -47,12 +47,14 @@ mem_alloc mem[N/2+1];        /* Πίνακας τμημάτων μνήμης γ�
 int searchForMem(int x)
 {
     int left = 0;
-    int right = free_items-1;
+    int right = free_items - 1;
 
     // Όσο το αριστερό όριο είναι μικρότερο ή ίσο του δεξιού (έχουν μείνει στοιχεία στον πίνακα)
     while (left <= right) {
         // Βρίσκουμε την μέση του πίνακα
         int middle = (left + right) / 2;
+
+        int temp = mem[middle-1].size;
 
         // Αν το x βρίσκεται ανάμεσα στο προηγούμενο στοιχείο του μεσαίου και στο μεσαίο
         if ( (x > mem[middle-1].size) && (x <= mem[middle].size) ) {
@@ -373,7 +375,6 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
     {
         ret1= bestfit(i);	/* Δέσμευση μνήμης */
         printfreelist(); 	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
-
         ret2= bestfit(4*i); /* Δέσμευση μνήμης */
         printfreelist();	/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
 
