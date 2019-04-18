@@ -129,6 +129,35 @@ void removeNodeFromArray(int position)
     free_items--;
 }
 
+// Εισάγει έναν νέο κόμβο στον πίνακα mem[]
+int insertNodeToArray(node *myNode, int size)
+{
+    int i, j, currentPosition;
+
+    for(i=0; (mem[i].size<size); i++);
+
+    currentPosition = i;
+
+    for(j=free_items; j>currentPosition; j--) {
+        // Κύληση όλων των στοιχείων μια θέση δεξιά
+        mem[j] = mem[j-1];
+    }
+
+    mem[currentPosition].size = size;
+    mem[currentPosition].mem_node = myNode;
+
+    free_items++;
+}
+
+// Αλλάζει το size ενός στοιχείου στον πίνακα mem και το ταξινομεί ταυτόχρονα
+void changeMemSizeInArray(node *myNode, int newSize)
+{
+    int position = findArrayPosition(myNode);
+
+    removeNodeFromArray(position);
+    insertNodeToArray(myNode, newSize);
+}
+
 /* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
  * Επιστρέφεται η αρχική διεύθυνση του τμήματος μνήμης που έχει επιλεγεί */
 int bestfit(int alloc)
@@ -154,7 +183,7 @@ int bestfit(int alloc)
     // Αν δεν βρεθεί ακριβώς ο χώρος. Αλλάζει τις διαστάσεις του συγκεκριμένου κόμβου
     mem[memPosition].mem_node->size -= alloc;
     mem[memPosition].mem_node->address += alloc;
-    mem[memPosition].size -= alloc;
+    changeMemSizeInArray(mem[memPosition].mem_node, mem[memPosition].mem_node->size);
 
     return oldAddress;
 }
@@ -188,26 +217,6 @@ void printMem()
     }
 
     printf("\n");
-}
-
-// Εισάγει έναν νέο κόμβο στον πίνακα mem[]
-int insertNodeToArray(node *myNode, int size)
-{
-    int i, j, currentPosition;
-
-    for(i=0; (mem[i].size<size); i++);
-
-    currentPosition = i;
-
-    for(j=free_items; j>currentPosition; j--) {
-        // Κύληση όλων των στοιχείων μια θέση δεξιά
-        mem[j] = mem[j-1];
-    }
-
-    mem[currentPosition].size = size;
-    mem[currentPosition].mem_node = myNode;
-
-    free_items++;
 }
 
 // Έλεγχος αν υπάρχει αριστερά από το address κομμάτι που μπορεί να συγχωνευτεί
@@ -249,8 +258,6 @@ void returntofreelist(int address, int size)
     int needLeftMerge = 0;
     int needRightMerge = 0;
 
-    int tempSize;
-
     if (freelist == NULL) {
         printf("Η λίστα είναι άδεια\n");
         return;
@@ -285,12 +292,7 @@ void returntofreelist(int address, int size)
         // Αλλαγή του previous με το νέο μέγεθος
         previous->size += size;
 
-        position = findArrayPosition(previous);
-
-        tempSize = mem[position-1].size + size;
-        removeNodeFromArray(position);
-        insertNodeToArray(previous, tempSize);
-
+        changeMemSizeInArray(current, previous->size);
     }
 
     // Αν πρέπει να συγχωνευτεί με το δεξί node
@@ -299,22 +301,14 @@ void returntofreelist(int address, int size)
         current->address = address;
         current->size += size;
 
-        position = findArrayPosition(current);
-
-        tempSize = mem[position].size + size;
-        removeNodeFromArray(position);
-        insertNodeToArray(current, tempSize);
+        changeMemSizeInArray(current, current->size);
     }
 
     // (5) Αν γίνει συγχώνευση και με το αριστερό και με το δεξιό, διαγραφή του δεξιού
     if(needLeftMerge && needRightMerge) {
         previous->size += size + current->size;
 
-        position = findArrayPosition(previous);
-
-        tempSize = previous->size;
-        removeNodeFromArray(position);
-        insertNodeToArray(previous, tempSize);
+        changeMemSizeInArray(current, previous->size);
 
         position = findArrayPosition(current);
 
