@@ -54,10 +54,11 @@ int searchForMem(int x)
         // Βρίσκουμε την μέση του πίνακα
         int middle = (left + right) / 2;
 
-        int temp = mem[middle-1].size;
+        // TODO refactor this, maybe
+        int previous = (middle-1 < 0) ? 0 : mem[middle-1].size;
 
         // Αν το x βρίσκεται ανάμεσα στο προηγούμενο στοιχείο του μεσαίου και στο μεσαίο
-        if ( (x > mem[middle-1].size) && (x <= mem[middle].size) ) {
+        if ( (x > previous) && (x <= mem[middle].size) ) {
             return middle;
         }
 
