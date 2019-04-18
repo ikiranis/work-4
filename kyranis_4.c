@@ -43,26 +43,6 @@ mem_alloc mem[N/2+1];        /* Πίνακας τμημάτων μνήμης γ�
                                 αν μπορούν να γίνουν ένα ενιαίο ελεύθερο τμήμα μνήμης, το πλήθος των ελεύθερων τμημάτων είναι το πολύ Ν/2+1. */
 
 
-/* ΕΔΩ ΒΑΛΤΕ ΟΡΙΣΜΟΥΣ ΒΟΗΘΗΤΙΚΩΝ ΣΥΝΑΡΤΗΣΕΩΝ (AN ΚΡΙΝΕΤΕ ΑΠΑΡΑΙΤΗΤΟ ΝΑ ΥΠΑΡΧΟΥΝ ΣΤΟ ΠΡΟΓΡΑΜΜΑ) */
-
-
-/* Εκτύπωση της λίστας των ελεύθερων τμημάτων */
-void printfreelist()
-{
-    node *current = freelist;
-
-//    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
-    printf(": ");
-
-    while(current!=NULL) {
-        printf("(%d, %d)->", current->address, current->size);
-
-        current = current->next;
-    }
-
-    printf("\n");
-}
-
 // Δυαδική αναζήτηση του x μέσα στον πίνακα mem
 int searchForMem(int x)
 {
@@ -154,38 +134,9 @@ void changeMemSizeInArray(node *myNode, int newSize)
 {
     int position = findArrayPosition(myNode);
 
+    // Αφαίρεση του κόμβου από το mem και προσθήκη του πάλι σε σωστή ταξινομημένη θέση
     removeNodeFromArray(position);
     insertNodeToArray(myNode, newSize);
-}
-
-/* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
- * Επιστρέφεται η αρχική διεύθυνση του τμήματος μνήμης που έχει επιλεγεί */
-int bestfit(int alloc)
-{
-    int memPosition = searchForMem(alloc);
-
-    if(memPosition == -1) {
-        return memPosition;
-    }
-
-    // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
-    if (mem[memPosition].size == alloc) {
-        int freeAddress = mem[memPosition].mem_node->address;
-        int position = findArrayPosition(mem[memPosition].mem_node);
-
-        removeNodeFromList(mem[memPosition].mem_node);
-        removeNodeFromArray(position);
-
-        return freeAddress;
-    }
-
-    int oldAddress = mem[memPosition].mem_node->address;
-    // Αν δεν βρεθεί ακριβώς ο χώρος. Αλλάζει τις διαστάσεις του συγκεκριμένου κόμβου
-    mem[memPosition].mem_node->size -= alloc;
-    mem[memPosition].mem_node->address += alloc;
-    changeMemSizeInArray(mem[memPosition].mem_node, mem[memPosition].mem_node->size);
-
-    return oldAddress;
 }
 
 // Εισάγει ένα νέο node στην λίστα, πριν από το myNode
@@ -196,7 +147,6 @@ node * insertNodeToList(node *previous, node *myNode, int address, int size)
     new->address = address;
     new->size = size;
     new->next = myNode;
-
 
     if(myNode == freelist) {
         freelist = new;
@@ -245,6 +195,54 @@ int checkRightNode(node *myNode, int end)
 
     // Όταν μπορεί να υπάρξει συγχώνευση
     return 1;
+}
+
+/* Εκτύπωση της λίστας των ελεύθερων τμημάτων */
+void printfreelist()
+{
+    node *current = freelist;
+
+//    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
+    printf(": ");
+
+    while(current!=NULL) {
+        printf("(%d, %d)->", current->address, current->size);
+
+        current = current->next;
+    }
+
+    printf("\n");
+}
+
+/* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
+ * Επιστρέφεται η αρχική διεύθυνση του τμήματος μνήμης που έχει επιλεγεί */
+int bestfit(int alloc)
+{
+    int memPosition = searchForMem(alloc);
+
+    if(memPosition == -1) {
+        return memPosition;
+    }
+
+    // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
+    if (mem[memPosition].size == alloc) {
+        int freeAddress = mem[memPosition].mem_node->address;
+        int position = findArrayPosition(mem[memPosition].mem_node);
+
+        removeNodeFromList(mem[memPosition].mem_node);
+        removeNodeFromArray(position);
+
+        return freeAddress;
+    }
+
+    int oldAddress = mem[memPosition].mem_node->address;
+    // Αν δεν βρεθεί ακριβώς ο χώρος. Αλλάζει τις διαστάσεις του συγκεκριμένου κόμβου
+    mem[memPosition].mem_node->size -= alloc;
+    mem[memPosition].mem_node->address += alloc;
+
+    changeMemSizeInArray(mem[memPosition].mem_node, mem[memPosition].mem_node->size);
+
+    return oldAddress;
 }
 
 /* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
@@ -334,6 +332,32 @@ void init() 								/* Αρχικοποίηση λίστας και πίνακα
     mem[0].mem_node=ptr;
 }
 
+void testMemAddRemove()
+{
+    int i, ret1, ret2;
+
+    int testArray1[10] = {50, 10, 3, 5, 8, 30, 11, 4, 13, 3};
+    int testArray2[10][2] = { {60, 11}, {200, 13}, {1, 4}, {71, 4}, {134, 40}, {259, 37}, {9, 13}, {24, 5}, {10, 2}, {20, 4} };
+
+    for (i=0; i<10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
+    {
+        printf("\n");
+        printMem();
+
+        printf("Δώσε μέγεθος μνήμης για δέσμευση: %d\n", testArray1[i]);
+        ret2 = testArray1[i];
+        ret1= bestfit(ret2);
+        if (ret1!=-1) printf("Υπάρχει διαθέσιμη μνήμη στη διεύθυνση %d.\n", ret1);
+        printfreelist();
+
+        printf("Δώσε μνήμη για αποδέσμευση (διεύθυνση, μέγεθος): %d %d\n", testArray2[i][0], testArray2[i][1]);
+        ret1 = testArray2[i][0];
+        ret2 = testArray2[i][1];
+        returntofreelist(ret1, ret2);
+        printfreelist();
+    }
+}
+
 int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
 {
 
@@ -341,8 +365,6 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
     int i,ret1, ret2;    /* Η μεταβλητή ret1 αναπαριστά διεύθυνση, η μεταβλητή ret2 στο πρώτο πείραμα (πρώτος βρόχος)
 	   αναπαριστά διεύθυνση, και στο δεύτερο πείραμα (δεύτερος βρόχος) αναπαριστά μέγεθος μνήμης */
 
-    int testArray1[10] = {50, 10, 3, 5, 8, 30, 11, 4, 13, 3};
-    int testArray2[10][2] = { {60, 11}, {200, 13}, {1, 4}, {71, 4}, {134, 40}, {259, 37}, {9, 13}, {24, 5}, {10, 2}, {20, 4} };
 
     init(); 				/* Αρχικοποίηση */
     printfreelist();		/* Εκτύπωση λίστας ελεύθερων τμημάτων μνήμης */
@@ -373,26 +395,10 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
 //        printfreelist();
 //    }
 
-    for (i=0; i<10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
-    {
-        printf("\n");
-        printMem();
+//    testMemAddRemove();
 
-        printf("Δώσε μέγεθος μνήμης για δέσμευση: %d\n", testArray1[i]);
-        ret2 = testArray1[i];
-        ret1= bestfit(ret2);
-        if (ret1!=-1) printf("Υπάρχει διαθέσιμη μνήμη στη διεύθυνση %d.\n", ret1);
-        printfreelist();
 
-        printf("Δώσε μνήμη για αποδέσμευση (διεύθυνση, μέγεθος): %d %d\n", testArray2[i][0], testArray2[i][1]);
-        ret1 = testArray2[i][0];
-        ret2 = testArray2[i][1];
-        returntofreelist(ret1, ret2);
-        printfreelist();
-    }
 
 //    system("pause");
     return 0;
 }
-
-
