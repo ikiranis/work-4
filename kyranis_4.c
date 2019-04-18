@@ -292,7 +292,7 @@ void returntofreelist(int address, int size)
         // Αλλαγή του previous με το νέο μέγεθος
         previous->size += size;
 
-        changeMemSizeInArray(current, previous->size);
+        changeMemSizeInArray(previous, previous->size);
     }
 
     // Αν πρέπει να συγχωνευτεί με το δεξί node
@@ -308,7 +308,7 @@ void returntofreelist(int address, int size)
     if(needLeftMerge && needRightMerge) {
         previous->size += size + current->size;
 
-        changeMemSizeInArray(current, previous->size);
+        changeMemSizeInArray(previous, previous->size);
 
         position = findArrayPosition(current);
 
