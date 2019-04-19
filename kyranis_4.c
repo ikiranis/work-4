@@ -48,14 +48,16 @@ int searchForMem(int x)
 {
     int left = 0;
     int right = free_items - 1;
+    int middle;
+    int previous;
 
     // Όσο το αριστερό όριο είναι μικρότερο ή ίσο του δεξιού (έχουν μείνει στοιχεία στον πίνακα)
     while (left <= right) {
         // Βρίσκουμε την μέση του πίνακα
-        int middle = (left + right) / 2;
+        middle = (left + right) / 2;
 
         // TODO refactor this, maybe
-        int previous = (middle-1 < 0) ? 0 : mem[middle-1].size;
+        previous = (middle-1 < 0) ? 0 : mem[middle-1].size;
 
         // Αν το x βρίσκεται ανάμεσα στο προηγούμενο στοιχείο του μεσαίου και στο μεσαίο
         if ( (x > previous) && (x <= mem[middle].size) ) {
@@ -142,21 +144,33 @@ void changeMemSizeInArray(node *myNode, int newSize)
     insertNodeToArray(myNode, newSize);
 }
 
-// Εισάγει ένα νέο node στην λίστα, πριν από το myNode
-node * insertNodeToList(node *previous, node *myNode, int address, int size)
+/**
+ * Εισάγει ένα νέο node στην λίστα, ανάμεσα στο previous και στο current
+ *
+ * @param previous
+ * @param current
+ * @param address
+ * @param size
+ * @return
+ */
+node * insertNodeToList(node *previous, node *current, int address, int size)
 {
+    // Δέσμευση μνήμης για τον νέο κόμβο
     node *new = (node *) malloc(sizeof(node));
 
+    // Δίνουμε τιμές στον νέο κόμβο
     new->address = address;
     new->size = size;
-    new->next = myNode;
+    new->next = current;
 
-    if(myNode == freelist) {
-        freelist = new;
+    // Αν το current βρίσκεται στην αρχή της λίστας
+    if(current == freelist) {
+        freelist = new; // Νέο head γίνεται ο νέος κόμβος που προσθέσαμε
     } else {
-        previous->next = new;
+        previous->next = new; // Ο προηγούμενος κόμβος δείχνει στον νέο
     }
 
+    // Επιστροφή του νέου κόμβου
     return new;
 }
 
@@ -189,8 +203,6 @@ int checkLeftNode(node *myNode, int address)
 // Έλεγχος αν υπάρχει δεξιά από το address κομμάτι που μπορεί να συγχωνευτεί
 int checkRightNode(node *myNode, int end)
 {
-//    int start = myNode->address + myNode->size;
-
     // Όταν η διεύθυνση είναι μεγαλύτερη από το τέλος του προηγούμενου κόμβου
     if (end < myNode->address) {
         return 0;
@@ -222,6 +234,7 @@ void printfreelist()
 int bestfit(int alloc)
 {
     int memPosition = searchForMem(alloc);
+    int oldAddress;
 
     if(memPosition == -1) {
         return memPosition;
@@ -232,13 +245,15 @@ int bestfit(int alloc)
         int freeAddress = mem[memPosition].mem_node->address;
         int position = findArrayPosition(mem[memPosition].mem_node);
 
+        // TODO refactor this, maybe
         removeNodeFromList(mem[memPosition].mem_node);
         removeNodeFromArray(position);
 
         return freeAddress;
     }
 
-    int oldAddress = mem[memPosition].mem_node->address;
+    // TODO refactor this, maybe
+    oldAddress = mem[memPosition].mem_node->address;
     // Αν δεν βρεθεί ακριβώς ο χώρος. Αλλάζει τις διαστάσεις του συγκεκριμένου κόμβου
     mem[memPosition].mem_node->size -= alloc;
     mem[memPosition].mem_node->address += alloc;
@@ -251,70 +266,71 @@ int bestfit(int alloc)
 /* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
 void returntofreelist(int address, int size)
 {
-    node *current = freelist;
-    node *previous = NULL;
-    node *newNode;
+    node *current = freelist; // Αρχικοποίηση του current με το head της λίστας
+    node *previous = NULL; // Ο προηγούμενος κόμβος
+    node *newNode; // Ο νέος κόμβος που θα προστεθεί
 
-    int position;
+    // Βοηθητικές μεταβλητές που παίρνουν τις τιμές 0/1
     int needLeftMerge = 0;
     int needRightMerge = 0;
 
+    // Έλεγχος αν η λίστα είναι άδεια
     if (freelist == NULL) {
         printf("Η λίστα είναι άδεια\n");
         return;
     }
 
-    // (1) Βρίσκω την θέση της address. Διαπέραση της λίστας μέχρι το σημείο της διεύθυνσης
-
+    // Διαπερνάμε την λίστα μέχρι το τέλος της ή μέχρι η διεύθυνση που θέλουμε να προσθέσουμε,
+    // είναι μεγαλύτερη από μία υπάρχουσα. Στο τέλος το current θα βρίσκεται μία θέση μετά από τον
+    // κόμβο που θα προσθέσουμε. Ενώ το previous, μία θέση πριν
     while( (current->next != NULL) && (address > current->address)) {
-
         previous = current;
-
         current = current->next;
     }
 
-    // (2) Έλεγχος αν μπορεί να συγχωνευτεί με τα αριστερά και τα δεξιά κομμάτια
+    // Αν υπάρχει προηγούμενος κόμβος, ελέγχουμε αν μπορεί να γίνει συγχώνευση με αυτόν
     if(previous) {
         needLeftMerge = checkLeftNode(previous, address);
     }
 
+    // Έλεγχος αν μπορεί να γίνει συγχώνευση με τον δεξί κόμβο
     needRightMerge = checkRightNode(current, address + size);
 
-    // (3) Αν δεν γίνει συγχώνευση, προσθήκη του νέου τμήματος στο κατάλληλο σημείο
+    // Αν δεν χρειάζεται να γίνει συγχώνευση, προσθήκη νέου κόμβου ανάμεσα στον previous και στον current
     if(!needLeftMerge && !needRightMerge) {
         newNode = insertNodeToList(previous, current, address, size);
         insertNodeToArray(newNode, size);
     }
 
-    // (4) Αν γίνει συγχώνευση με το αριστερό ή δεξιό, γίνονται οι κατάλληλες ενημερώσεις
-
-    // Αν πρέπει να συγχωνευτεί με το αριστερό node
+    // Αν μπορεί να γίνει συγχώνευση μόνο με τον αριστερό κόμβο
     if(needLeftMerge && !needRightMerge) {
-        // Αλλαγή του previous με το νέο μέγεθος
+        // Αλλάζουμε το μέγεθος της μνήμης του προηγούμενου κόμβου
         previous->size += size;
 
+        // Αλλάζουμε το μέγεθος της μνήμης του αντίστοιχου στοιχείου και στον πίνακα mem[]
         changeMemSizeInArray(previous, previous->size);
     }
 
-    // Αν πρέπει να συγχωνευτεί με το δεξί node
+    // Αν μπορεί να γίνει συγχώνευση μόνο με τον δεξιό κόμβο
     if(!needLeftMerge && needRightMerge) {
-        // Αλλαγή του current με την νέα διεύθυνση και μέγεθος
-        current->address = address;
-        current->size += size;
+        current->address = address; // Ο δεξιός κόμβος παίρνει για διεύθυνση, την νέα address
+        current->size += size; // Το ίδιο και στο μέγεθος μνήμης προστίθεται και το size
 
+        // Αλλάζουμε το μέγεθος της μνήμης του αντίστοιχου στοιχείου και στον πίνακα mem[]
         changeMemSizeInArray(current, current->size);
     }
 
-    // (5) Αν γίνει συγχώνευση και με το αριστερό και με το δεξιό, διαγραφή του δεξιού
+    // Αν μπορεί να γίνει συγχώνευση και με το αριστερό και με το δεξιό κόμβο, διαγράφουμε τον δεξιό
     if(needLeftMerge && needRightMerge) {
+        // Ο αριστερός κόμβος παίρνει συνολικά το μέγεθος μνήμης και των τριών κόμβουν που συγχωνεύονται
         previous->size += size + current->size;
 
+        // Αλλάζουμε το μέγεθος της μνήμης του αντίστοιχου στοιχείου και στον πίνακα mem[]
         changeMemSizeInArray(previous, previous->size);
 
-        position = findArrayPosition(current);
-
+        // Διαγράφουμε τον δεξιό κόμβο από την λίστα. Αντίστοιχα και το στοιχείο στον πίνακα mem[]
         removeNodeFromList(current);
-        removeNodeFromArray(position);
+        removeNodeFromArray(findArrayPosition(current));
     }
 }
 
@@ -397,7 +413,7 @@ int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επ�
 //        printfreelist();
 //    }
 
-//    testMemAddRemove();
+    testMemAddRemove();
 
 
 
