@@ -29,9 +29,7 @@ void copyArrays(float source[DIMY][DIMX], float target[DIMY][DIMX]);
 /* Κύριο πρόγραμμα υπολογισμού μετάδοσης θερμοκρασίας */
 int main()
 {
-    /* Δημιούργησε ένα πίνακα Plate στον οποίο αποθηκεύεται η θερμοκρασία
-    σε διαδοχικές στιγμές */
-
+    /* Πίνακας στον οποίο αποθηκεύεται η θερμοκρασία σε διαδοχικές στιγμές */
     float Plate[DIMY][DIMX];
     float newPlate[DIMY][DIMX]; // Νέος πίνακας
     int time;   /* Μεταβλητή για υπολογισμό χρόνου μετάβασης */
@@ -90,7 +88,7 @@ float CalculateCorner(float side1, float side2)
     return (float) (side1 + side2) / 2;
 }
 
-/*  Ζήτησε αρχικές θερμοκρασίες από τον χρήστη και αρχικοποίησε πίνακα */
+/*  Εισαγωγή θερμοκρασιών από τον χρήστη και αρχικοποίηση πίνακα */
 void InitializeTable(float T[DIMY][DIMX])
 {
     float Tw, Te,Tn, Ts, T0; // Οι πλευρικές θερμοκρασίες και της πλάκας
