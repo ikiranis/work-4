@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 const int DIMX = 20;
 const int DIMY = 10;
@@ -37,8 +38,7 @@ int main()
     float SumVariation; // Η αθροιστική μεταβολή των στοιχείων της πλάκας
 
     /* Εισαγωγή Ελληνικών χαρακτήρων */
-//    system("chcp 1253>nul");
-
+    system("chcp 1253>nul");
 
     time = 0;
     InitializeTable(Plate); /* Aρχικοποίηση πίνακα Plate */
@@ -72,7 +72,6 @@ int main()
 
 }
 
-
 /* Εισαγωγή θερμοκρασίας από τον χρήστη με μήνυμα εκτύπωσης προς χρήστη το prompt */
 float EnterTemperature(const char prompt[51])
 {
@@ -103,12 +102,6 @@ void InitializeTable(float T[DIMY][DIMX])
     Tn = EnterTemperature("Δώσε την πλευρική θερμοκρασία T north: ");
     Ts = EnterTemperature("Δώσε την πλευρική θερμοκρασία T south: ");
     T0 = EnterTemperature("Δώσε την θερμοκρασία της πλάκας T(0): ");
-
-//    Tw = 4;
-//    Te = -5;
-//    Tn = 2;
-//    Ts = 3;
-//    T0 = 1;
 
     // Διαπέραση όλων των στοιχείων του πίνακα Τ (εκτός των πλευρικών) και αρχικοποίηση με την τιμή T0
     for(i=1; i<DIMY-1; i++) {
@@ -173,13 +166,10 @@ float CalculateNextTemperature(float T[DIMY][DIMX], float C[DIMY][DIMX])
         }
     }
 
-
-
     // Επιστροφή της αθροιστικής μεταβολής
     return SumVariation;
 
 }
-
 
 // Αντιγραφή του source στον target πίνακα
 void copyArrays(float source[DIMY][DIMX], float target[DIMY][DIMX])
