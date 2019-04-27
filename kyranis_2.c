@@ -142,8 +142,13 @@ void sort_Stack(struct stack **head)
 /* ΑΝΑΔΡΟΜΙΚΗ συνάρτηση για την εμφάνιση των στοιχείων της στοίβας */
 void show(struct stack *head)
 {
-    if (head->next != NULL) {
-        printf("grade: %d\n", head->grade);
+    // Αν το head δεν είναι κενό, εκτύπωση του βαθμού
+    if (!isEmpty(head)) {
+        printf("Ο βαθμός του φοιτητή είναι: %d\n", head->grade);
+    }
+
+    // Αν υπάρχει επόμενος κόμβος καλεί και πάλι την show, για να εκτυπωθεί
+    if(head->next != NULL) {
         show(head->next);
     }
 }
@@ -221,19 +226,13 @@ int main()
 //
 //    } while (answer==1);
 
-//    push(&top, 4);
-//    push(&top, 3);
-////    push(&top, 10);
-//    push(&top, 1);
-//    push(&top, 5);
-//    push(&top, 2);
-//    push(&top, 5);
-//    push(&top, 9);
-//    push(&top, 7);
-
-    for(i=0;i<10;i++) {
-        push(&top, (int)rand()%10+1);
-    }
+    push(&top, 6);
+    push(&top, 9);
+    push(&top, 8);
+    push(&top, 10);
+    push(&top, 3);
+    push(&top, 5);
+    push(&top, 1);
 
     printf("\n");
     printf("Οι βαθμοί της στοίβας πριν την ταξινόμηση είναι:\n");
