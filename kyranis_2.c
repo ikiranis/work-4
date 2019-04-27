@@ -100,11 +100,8 @@ void Insert_Sort(struct stack **head, int vath)
 {
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
-//    printf("\n vath: %d ", vath);
-
     if (isEmpty(*head)) {
         push(head, vath);
-//        printf(" push in empty stack \n ");
 
         return;
     }
@@ -113,18 +110,13 @@ void Insert_Sort(struct stack **head, int vath)
 
     if (vath > grade) {
         push(head, vath);
-//        printf(" vath is greater, than %d\n Push %d \n", grade, vath);
 
         return;
     }
 
     grade = pop(head);
 
-//    printf(" pop the %d grade, run Insert_Sort, ", grade);
-
     Insert_Sort(head, vath);
-
-//    printf(" push back the grade: %d \n\n", grade);
 
     // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
     push(head, grade);
@@ -136,18 +128,11 @@ void sort_Stack(struct stack **head)
 {
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
-//    printf("\n%d empty\n", isEmpty(*head));
-
     if (!isEmpty(*head)) { // Όσο δεν βρισκόμαστε στον πάτο της στοίβας
         // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
         grade = pop(head);
 
-//        printf("\n%d ", grade);
-
-
         sort_Stack(head);
-
-//        push(head, grade);
 
         Insert_Sort(head, grade);
     }
@@ -157,30 +142,10 @@ void sort_Stack(struct stack **head)
 /* ΑΝΑΔΡΟΜΙΚΗ συνάρτηση για την εμφάνιση των στοιχείων της στοίβας */
 void show(struct stack *head)
 {
-    int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
-
-    if (isEmpty(head)) {
-        return;
+    if (head->next != NULL) {
+        printf("grade: %d\n", head->grade);
+        show(head->next);
     }
-
-    printf("\nHead: %p head->next: %p ", head , head->next);
-    // Εξάγουμε την βαθμολογία από την κορυφή της στοίβας
-    grade = pop(&head);
-//        printf("\nΟ βαθμός του φοιτητή είναι: %d", grade);
-    printf("grade: %d", grade);
-
-//        printf("\n Head before show: %d ", (int) head );
-    // Καλούμε την show() πάλι για να εξάγουμε την επόμενη τιμή
-    show(head);
-
-    // Όταν επιστρέψουμε, αναδρομικά, ξαναγεμίζουμε την στοίβα με τις τιμές που εξάγαμε
-    push(&head, grade);
-
-//        printf(" temp %d ", (int)temp);
-
-    printf("\nHead: %p head->next: %p Grade %d \n",  head, head->next, grade);
-
-
 }
 
 /* Συνάρτηση διαγραφής της στοίβας */
@@ -278,7 +243,7 @@ int main()
     printf("\n\n");
     printf("Οι βαθμοί της στοίβας μετά την ταξινόμηση είναι:\n");
 
-//    sort_Stack(&top);
+    sort_Stack(&top);
 
     show(top);
 
