@@ -100,20 +100,24 @@ void Insert_Sort(struct stack **head, int vath)
 {
     int grade; // Ο βαθμός που διαβάζουμε από την στοίβα
 
+    // Αν είναι κενή η στοίβα προσθέτουμε τον βαθμό
     if (isEmpty(*head)) {
         push(head, vath);
 
-        return;
+        return; // Τερματίζει η function
     }
 
+    // Διαβάζουμε την βαθμολογία που βρίσκεται στην κορυφή της στοίβας και την αποθηκεύουμε στην grade
     grade = top(*head);
 
+    // Αν ο βαθμός είναι μεγαλύτερος από αυτόν στην κορυφή της στοίβας (άρα μεγαλύτερος από όλους) τον προσθέτουμε
     if (vath > grade) {
         push(head, vath);
 
-        return;
+        return; // Τερματίζει η function
     }
 
+    // Εξάγουμε το στοιχείο της κορυφής και καλούμε πάλι την Insert_Sort
     grade = pop(head);
 
     Insert_Sort(head, vath);
