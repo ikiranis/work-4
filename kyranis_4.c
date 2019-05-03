@@ -43,21 +43,28 @@ mem_alloc mem[N/2+1];        /* Πίνακας τμημάτων μνήμης γ�
                                 αν μπορούν να γίνουν ένα ενιαίο ελεύθερο τμήμα μνήμης, το πλήθος των ελεύθερων τμημάτων είναι το πολύ Ν/2+1. */
 
 
-// Δυαδική αναζήτηση του x μέσα στον πίνακα mem
+/**
+ * Δυαδική αναζήτηση του x μέσα στον πίνακα mem
+ *
+ * @param x
+ * @return
+ */
 int searchForMem(int x)
 {
-    int left = 0;
-    int right = free_items - 1;
-    int middle;
-    int previous;
+    int left = 0; // Το αρχικό αριστερό όριο του πίνακα
+    int right = free_items - 1; // Το αρχικό δεξί όριο του πίνακα
+    int middle; // Η μέση του πίνακα
+    int previous; // Το προηγούμενο στοιχείο από το μεσαίο
 
     // Όσο το αριστερό όριο είναι μικρότερο ή ίσο του δεξιού (έχουν μείνει στοιχεία στον πίνακα)
     while (left <= right) {
         // Βρίσκουμε την μέση του πίνακα
         middle = (left + right) / 2;
 
-        // TODO refactor this, maybe
-        previous = (middle-1 < 0) ? 0 : mem[middle-1].size;
+        // Αν το μεσαίο στοιχείο είναι στην θέση 0 (συμβαίνει αν ο πίνακας έχει 1 στοιχείο μόνο)
+        // τότε το previous γίνεται 0. Αλλιώς το previous παίρνει την τιμή size που
+        // έχει το προηγούμενο στοιχείο
+        previous = (middle == 0) ? 0 : mem[middle-1].size;
 
         // Αν το x βρίσκεται ανάμεσα στο προηγούμενο στοιχείο του μεσαίου και στο μεσαίο
         if ( (x > previous) && (x <= mem[middle].size) ) {
@@ -77,66 +84,100 @@ int searchForMem(int x)
     return -1;
 }
 
-// Αφαίρεση κόμβου από την λίστα freelist
+/**
+ * Αφαίρεση κόμβου από την λίστα freelist
+ *
+ * @param myNode
+ */
 void removeNodeFromList(node *myNode)
 {
+    // Βοηθητικός δείκτης για την διαπέραση της λίστας που παίρνει την τιμή της κεφαλής
     node *current = freelist;
 
+    // Διαπέραση της λίστας μέχρι το τέλος της ή αν βρούμε τον κόμβο που θέλουμε να διαγράψουμε
     while ( (current->next != NULL) && (current->next != myNode) ) {
-        current = current->next;
+        current = current->next; // Μετακίνηση στον επόμενο κόμβο
     }
 
+    // Ο current κόμβος δείχνει στον επόμενο του myNode
     current->next = myNode->next;
 
-    free(myNode);
+    free(myNode); // Διαγραφή του κόμβου myNode
 }
 
-// Επιστρέφει την θέση στον πίνακα mem[] που δείχνει προς τον κόμβο myNode
+/**
+ * Επιστρέφει την θέση στον πίνακα mem[] που δείχνει προς τον κόμβο myNode
+ *
+ * @param myNode
+ * @return
+ */
 int findArrayPosition(node *myNode)
 {
-    int i;
+    int i; // Μετρητής
 
+    // Διαπερνούμε τον πίνακα mem[] μέχρι το mem_node να δείχνει στον κόμβου myNode που ψάχνουμε
     for(i=0; mem[i].mem_node != myNode; i++);
 
+    // Επιστρέφουμε την θέση στην οποία βρέθηκε ο δείκτης προς τον myNode
     return i;
 }
 
-// Αφαίρεση κόμβου από τον πίνακα
+/**
+ * Αφαίρεση κόμβου από τον πίνακα
+ *
+ * @param position
+ */
 void removeNodeFromArray(int position)
 {
-    int i;
+    int i; // Μετρητής
 
+    // Κύληση όλων των στοιχείων μια θέση αριστερά, αρχίζοντας από την θέση position
     for(i=position; i<free_items-1; i++) {
-        // Κύληση όλων των στοιχείων μια θέση αριστερά
         mem[i] = mem[i+1];
     }
 
+    // Μειώνουμε την μεταβλητή free_items που κρατάει το σύνολο των ελεύθερων θέσεων μνήμης
     free_items--;
 }
 
-// Εισάγει έναν νέο κόμβο στον πίνακα mem[]
+/**
+ * Εισάγει έναν νέο κόμβο στον πίνακα mem[]
+ *
+ * @param myNode
+ * @param size
+ * @return
+ */
 int insertNodeToArray(node *myNode, int size)
 {
-    int i, j, currentPosition;
+    int i, j; // Μετρητές
 
-    for(i=0; (mem[i].size<size); i++);
+    // Διαπερνούμε τον πίνακα mem μέχρι να βρούμε ένα μέγεθος μνήμης να είναι μεγαλύτερο
+    // από το size. Στο σημείο αυτό (η τιμή του i δηλαδή στο τέλος) θα προστεθεί ο νέος κόμβος.
+    for(i=0; mem[i].size<size; i++);
 
-    currentPosition = i;
-
-    for(j=free_items; j>currentPosition; j--) {
-        // Κύληση όλων των στοιχείων μια θέση δεξιά
+    // Κύληση όλων των στοιχείων μια θέση δεξιά, διαπερνόντας των πίνακα από το τέλος
+    // μέχρι την θέση που θα προστεθεί ο νέος κόμβος
+    for(j=free_items; j>i; j--) {
         mem[j] = mem[j-1];
     }
 
-    mem[currentPosition].size = size;
-    mem[currentPosition].mem_node = myNode;
+    // Δίνουμε τις τιμές που θα έχει ο νέος κόμβος
+    mem[i].size = size;
+    mem[i].mem_node = myNode;
 
+    // Αυξάνουμε την μεταβλητή free_items που κρατάει το σύνολο των ελεύθερων θέσεων μνήμης
     free_items++;
 }
 
-// Αλλάζει το size ενός στοιχείου στον πίνακα mem και το ταξινομεί ταυτόχρονα
+/**
+ * Αλλάζει το size ενός στοιχείου στον πίνακα mem και το ταξινομεί ταυτόχρονα
+ *
+ * @param myNode
+ * @param newSize
+ */
 void changeMemSizeInArray(node *myNode, int newSize)
 {
+    // Η θέση στον πίνακα mem, στην οποία βρίσκεται ο δείκτης προς τον κόμβος myNode
     int position = findArrayPosition(myNode);
 
     // Αφαίρεση του κόμβου από το mem και προσθήκη του πάλι σε σωστή ταξινομημένη θέση
@@ -186,84 +227,133 @@ void printMem()
     printf("\n");
 }
 
-// Έλεγχος αν υπάρχει αριστερά από το address κομμάτι που μπορεί να συγχωνευτεί
+/**
+ * Έλεγχος αν υπάρχει αριστερά από το address, κομμάτι που μπορεί να συγχωνευτεί
+ *
+ * @param myNode
+ * @param address
+ * @return
+ */
 int checkLeftNode(node *myNode, int address)
 {
+    // Η διεύθυνση μνήμης στο τέλος του συγκεκριμένου τμήματος μνήμης
     int end = myNode->address + myNode->size;
 
     // Όταν η διεύθυνση είναι μεγαλύτερη από το τέλος του προηγούμενου κόμβου
+    // Τα τμήματα μνήμης δηλαδή δεν πέφτουν το ένα πάνω στο άλλο
     if (address > end) {
-        return 0;
+        return 0; // Επιστρέφουμε false
     }
 
-    // Όταν μπορεί να υπάρξει συγχώνευση
+    // Υπάρχει υπερκάλυψη τμημάτων μνήμης, άρα μπορεί να υπάρξει συγχώνευσή τους
+    // Επιστρέφουμε true
     return 1;
 }
 
-// Έλεγχος αν υπάρχει δεξιά από το address κομμάτι που μπορεί να συγχωνευτεί
+/**
+ * Έλεγχος αν υπάρχει δεξιά από το address, κομμάτι που μπορεί να συγχωνευτεί
+ *
+ * @param myNode
+ * @param end
+ * @return
+ */
 int checkRightNode(node *myNode, int end)
 {
-    // Όταν η διεύθυνση είναι μεγαλύτερη από το τέλος του προηγούμενου κόμβου
-    if (end < myNode->address) {
-        return 0;
+    // Όταν η διεύθυνση του επόμενου κόμβου είναι μεγαλύτερη από το τέλος του νέου κόμβου
+    // που προσθέτουμε. Τα τμήματα μνήμης δηλαδή δεν πέφτουν το ένα πάνω στο άλλο
+    if (myNode->address > end) {
+        return 0; // Επιστρέφουμε false
     }
 
-    // Όταν μπορεί να υπάρξει συγχώνευση
+    // Υπάρχει υπερκάλυψη τμημάτων μνήμης, άρα μπορεί να υπάρξει συγχώνευσή τους
+    // Επιστρέφουμε true
     return 1;
 }
 
-/* Εκτύπωση της λίστας των ελεύθερων τμημάτων */
+/**
+ * Εκτύπωση της λίστας των ελεύθερων τμημάτων
+ */
 void printfreelist()
 {
+    // Βοηθητικός δείκτης για την διαπέραση της λίστας που παίρνει την τιμή της κεφαλής
     node *current = freelist;
 
 //    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
     printf(": ");
 
+    // Διαπέραση της λίστας μέχρι το τέλος της
     while(current!=NULL) {
+        // Εκτύπωση των δεδομένων
         printf("(%d, %d)->", current->address, current->size);
 
+        // Μετακίνηση στον επόμενο κόμβο
         current = current->next;
     }
 
     printf("\n");
 }
 
-/* Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
- * Επιστρέφεται η αρχική διεύθυνση του τμήματος μνήμης που έχει επιλεγεί */
+/**
+ * Συνάρτηση δέσμευσης μνήμης μεγέθους alloc bytes.
+ * Επιστρέφεται η αρχική διεύθυνση του τμήματος μνήμης που έχει επιλεγεί
+ *
+ * @param alloc
+ * @return
+ */
 int bestfit(int alloc)
 {
-    int memPosition = searchForMem(alloc);
-    int oldAddress;
+    int memPosition = searchForMem(alloc); // Η θέση που βρίσκεται ελεύθερη θέση μνήμης
+    int newFreeAddress; // Η διεύθυνση μνήμης τμήματος, που βρέθηκε ελεύθερο για δέσμευση
+    int freeAddress;
+    int position;
 
+    // Αν δεν βρεθεί ελεύθερη θέση μνήμης, επιστρέφουμε -1
     if(memPosition == -1) {
         return memPosition;
     }
 
-    // Αν βρεθεί ακριβώς ο χώρος για δέσμευση
+    // Αν βρεθεί ακριβώς ο χώρος για δέσμευση να είναι ίσος με αυτόν που ψάχνουμε
     if (mem[memPosition].size == alloc) {
-        int freeAddress = mem[memPosition].mem_node->address;
-        int position = findArrayPosition(mem[memPosition].mem_node);
+        // Η διεύθυνση της μνήμης που βρέθηκε ελεύθερο τμήμα
+        freeAddress = mem[memPosition].mem_node->address;
+        // Η θέση στον πίνακα mem όπου δείχνει ο δείκτης mem_node
+        position = findArrayPosition(mem[memPosition].mem_node);
 
         // TODO refactor this, maybe
+        // Αφαιρούμε το συγκεκριμένο τμήμα μνήμης από την λίστα με τα ελεύθερα,
+        // αφού πλέον δεσμεύεται
         removeNodeFromList(mem[memPosition].mem_node);
         removeNodeFromArray(position);
 
+        // Επιστρέφεται η διεύθυνση μνήμης του νέου δεσμευμένου τμήματος
         return freeAddress;
     }
 
     // TODO refactor this, maybe
-    oldAddress = mem[memPosition].mem_node->address;
-    // Αν δεν βρεθεί ακριβώς ο χώρος. Αλλάζει τις διαστάσεις του συγκεκριμένου κόμβου
-    mem[memPosition].mem_node->size -= alloc;
-    mem[memPosition].mem_node->address += alloc;
+    // Όταν ο χώρος για δέσμευση δεν είναι ίσος με αυτόν που ψάχνουμε
+    // Η διεύθυνση μνήμης τμήματος, που βρέθηκε ελεύθερο για δέσμευση
+    newFreeAddress = mem[memPosition].mem_node->address;
 
+    // Αλλάζoυμε τις διαστάσεις του υπάρχοντος τμήματος ελεύθερου μνήμης
+    mem[memPosition].mem_node->size -= alloc; // Αφαιρείται alloc ποσότητα μνήμης από το ελεύθερο τμήμα
+    mem[memPosition].mem_node->address += alloc; // Η νέα διεύθυνση του ελεύθερου τμήματος
+    // πηγαίνει πιο δεξιά με βάση την ποσότητα μνήμης που θα δεσμευτεί
+
+    // Αλλάζουμε το μέγεθος ελεύθερης μνήμης που είχε το αντίστοιχο στοιχείο στον
+    // πίνακα mem, με ταυτόχρονη ταξινόμηση του σε νέα θέση, αν χρειάζεται
     changeMemSizeInArray(mem[memPosition].mem_node, mem[memPosition].mem_node->size);
 
-    return oldAddress;
+    // Επιστροφή της διεύθυνσης μνήμης τμήματος, που βρέθηκε ελεύθερο για δέσμευση
+    return newFreeAddress;
 }
 
-/* Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes, στη λίστα ελεύθερων τμημάτων */
+/**
+ * Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes,
+ * στη λίστα ελεύθερων τμημάτων
+ *
+ * @param address
+ * @param size
+ */
 void returntofreelist(int address, int size)
 {
     node *current = freelist; // Αρχικοποίηση του current με το head της λίστας
@@ -334,7 +424,8 @@ void returntofreelist(int address, int size)
     }
 }
 
-void init() 								/* Αρχικοποίηση λίστας και πίνακα ελεύθερης μνήμης */
+/* Αρχικοποίηση λίστας και πίνακα ελεύθερης μνήμης */
+void init()
 {
     node *ptr = (node *)malloc(sizeof(node));   /* Δημιουργία αρχικού κόμβου λίστας */
     if (ptr == NULL)
@@ -351,6 +442,7 @@ void init() 								/* Αρχικοποίηση λίστας και πίνακα
     mem[0].mem_node=ptr;
 }
 
+// *********** Βοηθητική function
 void testMemAddRemove()
 {
     int i, ret1, ret2;
@@ -377,7 +469,8 @@ void testMemAddRemove()
     }
 }
 
-int main() 				 /* Κύριο πρόγραμμα με ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
+/* Κύριο πρόγραμμα με ενδεικτική επαναλαμβανόμενη δέσμευση/αποδέσμευση τμημάτων μνήμης */
+int main()
 {
 
 //    system("chcp 1253>nul"); /* Εισαγωγή Ελληνικών χαρακτήρων */
