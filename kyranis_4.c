@@ -304,8 +304,7 @@ int bestfit(int alloc)
 {
     int memPosition = searchForMem(alloc); // Η θέση που βρίσκεται ελεύθερη θέση μνήμης
     int newFreeAddress; // Η διεύθυνση μνήμης τμήματος, που βρέθηκε ελεύθερο για δέσμευση
-    int freeAddress;
-    int position;
+    int position; // Η θέση στον πίνακα mem όπου δείχνει ο δείκτης mem_node
 
     // Αν δεν βρεθεί ελεύθερη θέση μνήμης, επιστρέφουμε -1
     if(memPosition == -1) {
@@ -315,21 +314,19 @@ int bestfit(int alloc)
     // Αν βρεθεί ακριβώς ο χώρος για δέσμευση να είναι ίσος με αυτόν που ψάχνουμε
     if (mem[memPosition].size == alloc) {
         // Η διεύθυνση της μνήμης που βρέθηκε ελεύθερο τμήμα
-        freeAddress = mem[memPosition].mem_node->address;
+        newFreeAddress = mem[memPosition].mem_node->address;
         // Η θέση στον πίνακα mem όπου δείχνει ο δείκτης mem_node
         position = findArrayPosition(mem[memPosition].mem_node);
 
-        // TODO refactor this, maybe
         // Αφαιρούμε το συγκεκριμένο τμήμα μνήμης από την λίστα με τα ελεύθερα,
         // αφού πλέον δεσμεύεται
         removeNodeFromList(mem[memPosition].mem_node);
         removeNodeFromArray(position);
 
         // Επιστρέφεται η διεύθυνση μνήμης του νέου δεσμευμένου τμήματος
-        return freeAddress;
+        return newFreeAddress;
     }
 
-    // TODO refactor this, maybe
     // Όταν ο χώρος για δέσμευση δεν είναι ίσος με αυτόν που ψάχνουμε
     // Η διεύθυνση μνήμης τμήματος, που βρέθηκε ελεύθερο για δέσμευση
     newFreeAddress = mem[memPosition].mem_node->address;
