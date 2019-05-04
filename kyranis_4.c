@@ -145,7 +145,7 @@ void removeNodeFromArray(int position)
  * @param size
  * @return
  */
-int insertNodeToArray(node *myNode, int size)
+void insertNodeToArray(node *myNode, int size)
 {
     int i, j; // Μετρητές
 
@@ -336,6 +336,41 @@ int bestfit(int alloc)
 }
 
 /**
+ * Έλεγχος αν υπάρχει δεσμευμένη μνήμη μεγαλύτερη από το size
+ *
+ * @param size
+ * @return
+ */
+int checkForCommitedMemory(int size)
+{
+    node *current = freelist; // Αρχικοποίηση του current με το head της λίστας
+    int lastFreeBlock, nextFreeBlock, betweenFreeBlock;
+    int commitedMemory;
+    int commitedMemoryExist = 0;
+    int hasMoreThanOneNode = 0;
+
+    while (current->next != NULL) {
+        hasMoreThanOneNode++;
+
+        lastFreeBlock = current->size;
+
+        current = current->next;
+
+        betweenFreeBlock = current->address - lastFreeBlock;
+
+        commitedMemory = lastFreeBlock + betweenFreeBlock + current->size;
+
+        if ( commitedMemory > size ) {
+            commitedMemoryExist = 1;
+        }
+    }
+
+    // TODO όταν είναι μόνο ένα item να ελέγχει και τότε την δεσμευμένη μνήμη. (το υπόλοιπο της ελεύθερης)
+
+    return (hasMoreThanOneNode == 0) ? 1 : commitedMemoryExist;
+}
+
+/**
  * Επιστροφή τμήματος μνήμης με αρχική διεύθυνση address και μέγεθος size bytes,
  * στη λίστα ελεύθερων τμημάτων
  *
@@ -351,6 +386,11 @@ void returntofreelist(int address, int size)
     // Βοηθητικές μεταβλητές που παίρνουν τις τιμές 0/1
     int needLeftMerge = 0;
     int needRightMerge = 0;
+
+    if(!checkForCommitedMemory(size)) {
+        printf("\n********Δεν υπάρχει τόση δεσμευμένη μνήμη για να απελευθερωθεί\n");
+        return;
+    }
 
     // Διαπερνάμε την λίστα μέχρι το τέλος της ή μέχρι η διεύθυνση που θέλουμε να προσθέσουμε,
     // είναι μεγαλύτερη από μία υπάρχουσα. Στο τέλος το current θα βρίσκεται μία θέση μετά από τον
