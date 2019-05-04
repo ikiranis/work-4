@@ -215,18 +215,6 @@ node * insertNodeToList(node *previous, node *current, int address, int size)
     return new;
 }
 
-// TEMP FUNCTION *********************
-void printMem()
-{
-    int j;
-
-    for(j=0; j<free_items; j++) {
-        printf("%d\t", mem[j].size);
-    }
-
-    printf("\n");
-}
-
 /**
  * Έλεγχος αν υπάρχει αριστερά από το address, κομμάτι που μπορεί να συγχωνευτεί
  *
@@ -448,7 +436,6 @@ void testMemAddRemove()
     for (i=0; i<10; i++)   /* Δέσμευση/αποδέσμευση τμημάτων μνήμης από τον χρήστη */
     {
         printf("\n");
-        printMem();
 
         printf("Δώσε μέγεθος μνήμης για δέσμευση: %d\n", testArray1[i]);
         ret2 = testArray1[i];
