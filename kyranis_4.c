@@ -365,8 +365,6 @@ int checkForCommitedMemory(int size)
         }
     }
 
-    // test
-
     // TODO όταν είναι μόνο ένα item να ελέγχει και τότε την δεσμευμένη μνήμη. (το υπόλοιπο της ελεύθερης)
 
     return (hasMoreThanOneNode == 0) ? 1 : commitedMemoryExist;
