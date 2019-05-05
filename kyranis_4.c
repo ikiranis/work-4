@@ -336,38 +336,42 @@ int bestfit(int alloc)
 }
 
 /**
- * Έλεγχος αν υπάρχει δεσμευμένη μνήμη μεγαλύτερη από το size
+ * Αμυντικός μηχανισμός για να μην επιτραπεί η πιθανή αποδέσμευση πολύ μεγάλου τμήματος μνήμης,
+ * που ξεφεύγει από τα όρια.
  *
+ * Έλεγχος αν στην συγκεκριμένη διεύθυνση μπορεί να αποδευτεί μνήμη μεγέθους size.
+ *
+ * Προσθέτει το δεσμευμένο κομμάτι, μαζί με τα πιθανά αριστερά/δεξιά ελεύθερα τμήματα
+ * Αν το μέγεθος (size) είναι μικρότερο από το παραπάνω άθροισμα τότε μπορεί να γίνει
+ * η αποδέσμευση και επιστέφει 1. Αλλιώς 0.
+ *
+ * @param previous
+ * @param next
  * @param size
  * @return
  */
-int checkForCommitedMemory(int size)
+int checkForCommitedMemory(node *previous, node *next, int size)
 {
-    node *current = freelist; // Αρχικοποίηση του current με το head της λίστας
-    int lastFreeBlock, nextFreeBlock, betweenFreeBlock;
-    int commitedMemory;
-    int commitedMemoryExist = 0;
-    int hasMoreThanOneNode = 0;
+    int commitedMemory; // Η συνολική μνήμη που υπάρχει στην συγκεκριμένη διεύθυνση, για αποδέσμευση
+    int lastFreeBlock; // Το μέγεθος του πιθανού αριστερού ελεύθερου τμήματος
+    int betweenFreeBlock; // Το δεσμευμένο τμήμα μνήμης, ανάμεσα σε 2 πιθανά ελεύθερα τμήματα
 
-    while (current->next != NULL) {
-        hasMoreThanOneNode++;
+    // Αν υπάρχει αριστερό ελεύθερο τμήμα, παίρνει το μέγεθος του, αλλιώς 0
+    lastFreeBlock = (previous) ? previous->size : 0;
+    // Το δεσμευμένο κομμάτι ανάμεσα σε ελεύθερα τμήματα
+    betweenFreeBlock = next->address - lastFreeBlock;
 
-        lastFreeBlock = current->size;
+    // Το άθροισμα της μνήμης που μπορεί να αποδεσμευτεί
+    commitedMemory = lastFreeBlock + betweenFreeBlock + next->size;
 
-        current = current->next;
-
-        betweenFreeBlock = current->address - lastFreeBlock;
-
-        commitedMemory = lastFreeBlock + betweenFreeBlock + current->size;
-
-        if ( commitedMemory > size ) {
-            commitedMemoryExist = 1;
-        }
+    // Αν το συνολικό κομμάτι της μνήμης, είναι μικρότερο από αυτό που ζητάμε, τότε επισττέφει 0
+    // Δεν μπορεί να γίνει δηλαδή αποδέσμευση
+    if (commitedMemory < size) {
+        return 0;
     }
 
-    // TODO όταν είναι μόνο ένα item να ελέγχει και τότε την δεσμευμένη μνήμη. (το υπόλοιπο της ελεύθερης)
-
-    return (hasMoreThanOneNode == 0) ? 1 : commitedMemoryExist;
+    // Τελικά, επιστρέφει 1. Δηλαδή μπορεί να γίνει αποδέσμευση
+    return 1;
 }
 
 /**
@@ -387,17 +391,18 @@ void returntofreelist(int address, int size)
     int needLeftMerge = 0;
     int needRightMerge = 0;
 
-    if(!checkForCommitedMemory(size)) {
-        printf("\n********Δεν υπάρχει τόση δεσμευμένη μνήμη για να απελευθερωθεί\n");
-        return;
-    }
-
     // Διαπερνάμε την λίστα μέχρι το τέλος της ή μέχρι η διεύθυνση που θέλουμε να προσθέσουμε,
     // είναι μεγαλύτερη από μία υπάρχουσα. Στο τέλος το current θα βρίσκεται μία θέση μετά από τον
     // κόμβο που θα προσθέσουμε. Ενώ το previous, μία θέση πριν
     while( (current->next != NULL) && (address > current->address)) {
         previous = current;
         current = current->next;
+    }
+
+    // Έλεγχος αν στο συγκεκριμένο σημείο μπορεί να αποδευτεί μνήμη μεγέθους size.
+    if(!checkForCommitedMemory(previous, current, size)) {
+        printf("\nΔεν υπάρχει τόση μνήμη για να απελευθερωθεί\n");
+        return;
     }
 
     // Αν υπάρχει προηγούμενος κόμβος, ελέγχουμε αν μπορεί να γίνει συγχώνευση με αυτόν
