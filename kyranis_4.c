@@ -89,16 +89,23 @@ int searchForMem(int x)
  */
 void removeNodeFromList(node *myNode)
 {
-    // Βοηθητικός δείκτης για την διαπέραση της λίστας που παίρνει την τιμή της κεφαλής
+    // Βοηθητικοί δείκτες για την διαπέραση της λίστας που παίρνουν την τιμή της κεφαλής
     node *current = freelist;
+    node *previous = freelist;
 
     // Διαπέραση της λίστας μέχρι το τέλος της ή αν βρούμε τον κόμβο που θέλουμε να διαγράψουμε
-    while ( (current->next != NULL) && (current->next != myNode) ) {
+    while ( (current->next != NULL) && (current != myNode) ) {
+        previous = current;
         current = current->next; // Μετακίνηση στον επόμενο κόμβο
     }
 
-    // Ο current κόμβος δείχνει στον επόμενο του myNode
-    current->next = myNode->next;
+    // Ο previous κόμβος δείχνει στον επόμενο του myNode
+    previous->next = current->next;
+
+    // Αν βρισκίμαστε στον πρώτο κόμβο, η κεφαλή γίνεται τώρα ο αμέσως επόμενος κόμβος
+    if(current==freelist) {
+        freelist = current->next;
+    }
 
     free(myNode); // Διαγραφή του κόμβου myNode
 }
@@ -271,7 +278,8 @@ void printfreelist()
     // Βοηθητικός δείκτης για την διαπέραση της λίστας που παίρνει την τιμή της κεφαλής
     node *current = freelist;
 
-    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
+//    printf("Η λίστα ελεύθερων τμημάτων μνήμης (αρχική διεύθυνση, μέγεθος τμήματος) είναι η: ");
+    printf("\n");
 
     // Διαπέραση της λίστας μέχρι το τέλος της
     while(current!=NULL) {
